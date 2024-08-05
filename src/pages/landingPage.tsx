@@ -14,28 +14,6 @@ const LandingPage: React.FC = () => {
                     <Button color="inherit" component={RouterLink} to="/about">About</Button>
                 </Toolbar>
             </AppBar>
-            <Grid container spacing={3} style={{ marginTop: '20px' }}>
-                <Grid item xs={12}>
-                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                        <Paper elevation={3} style={{ padding: '30px' }}>
-                            <Typography variant="h4" gutterBottom>Welcome to Movie Mania</Typography>
-                            <Typography variant="subtitle1" gutterBottom>
-                                Explore a world of movies at your fingertips.
-                            </Typography>
-                            <Link component={RouterLink} to="/movies">
-                                <Button variant="contained" color="primary">
-                                    Browse Movies
-                                </Button>
-                            </Link>
-                        </Paper>
-                    </Box>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="body1" color="textSecondary" align="center">
-                        © 2024 Movie Mania, Inc.
-                    </Typography>
-                </Grid>
-            </Grid>
         </Container>
     );
 };
