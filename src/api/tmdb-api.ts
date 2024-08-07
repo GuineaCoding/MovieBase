@@ -70,3 +70,12 @@ export const getMovie = (id: string) => {
     .then(json => json.results);
   };
   
+ export const fetchGenres = async () => {
+    const response = await fetch(
+        `https://api.themoviedb.org/3/genre/movie/list?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US`
+    );
+    if (!response.ok) {
+        throw new Error(`Failed to fetch genres, status: ${response.status}`);
+    }
+    return response.json();
+};

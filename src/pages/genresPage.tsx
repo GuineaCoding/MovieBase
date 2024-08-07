@@ -1,33 +1,27 @@
 import React from 'react';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';  
-import GenreItem from '../components/genresPage/index'; 
-
-const fetchGenres = async () => {
-    const response = await fetch(
-        `https://api.themoviedb.org/3/genre/movie/list?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US`
-    );
-    if (!response.ok) {
-        throw new Error(`Failed to fetch genres, status: ${response.status}`);
-    }
-    return response.json();
-};
+import GenreItem from '../components/genresPage/index';
+import { fetchGenres } from "../api/tmdb-api";
+import { Grid, Paper, Typography } from '@mui/material';
 
 const GenresPage = () => {
     const { data, error, isLoading, isError } = useQuery('genres', fetchGenres);
 
     if (isLoading) return <Spinner />;
-    if (isError) return <div>Error: {error.message}</div>;
+    if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
 
     return (
-        <div>
-            <h1>Genres</h1>
-            <ul>
+        <Paper style={{ padding: '20px', margin: '20px' }}>
+            <Typography variant="h4" gutterBottom>Genres</Typography>
+            <Grid container spacing={2}>
                 {data.genres.map((genre) => (
-                    <GenreItem key={genre.id} genre={genre} />
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={genre.id}>
+                        <GenreItem genre={genre} />
+                    </Grid>
                 ))}
-            </ul>
-        </div>
+            </Grid>
+        </Paper>
     );
 };
 
