@@ -79,3 +79,11 @@ export const getMovie = (id: string) => {
     }
     return response.json();
 };
+
+export const fetchGenreMovies = async (genreId) => {
+  const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&with_genres=${genreId}`);
+  if (!response.ok) {
+      throw new Error('Failed to fetch genre movies');
+  }
+  return response.json();
+};
