@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Navigate, Routes } from "react-router-dom";
 import HomePage from "./pages/homePage";
-import MoviePage from "./pages/movieDetailsPage";
+import MovieDetailsPage from "./pages/movieDetailsPage";
 import FavouriteMoviesPage from "./pages/favouriteMoviesPage";
 import MovieReviewPage from "./pages/movieReviewPage";
 import UpcomingMoviesPage from "./pages/upcomingMovies"; 
@@ -16,7 +16,7 @@ import GenreDetailsPage from './pages/genreDetailsPage';
 import PopularMoviesPage from './pages/popularMoviesPage';
 import ActorsPage from './pages/actorsPage';
 import ActorDetailsPage from './pages/actorDetailsPage';
-
+import TVSeriesPage from './pages/TVSeriesPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,7 +37,7 @@ const App = () => {
             <Routes>
         <Route path="/movies/favourites" element={<FavouriteMoviesPage />} />
         <Route path="/reviews/form" element={<AddMovieReviewPage/>} />
-        <Route path="/movies/:id" element={<MoviePage />} />
+        <Route path="/movies/:id" element={<MovieDetailsPage />} />
         <Route path="/movies/upcoming" element={<UpcomingMoviesPage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/reviews/:id" element={<MovieReviewPage />} />
@@ -47,6 +47,7 @@ const App = () => {
         <Route path="/popular" element={<PopularMoviesPage />} />
         <Route path="/actors" element={<ActorsPage />} />
         <Route path="/actors/:id" element={<ActorDetailsPage />} />
+        <Route path="/tvseries" element={<TVSeriesPage />} />
         {/* <Route path="/featured" element={<FeaturedFilmsPage />} />
         <Route path="/boxoffice" element={<BoxOfficePage />} />
         <Route path="/movie/:id" element={<MovieDetailsPage />} />
