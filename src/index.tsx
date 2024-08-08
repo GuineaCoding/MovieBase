@@ -17,6 +17,7 @@ import PopularMoviesPage from './pages/popularMoviesPage';
 import ActorsPage from './pages/actorsPage';
 import ActorDetailsPage from './pages/actorDetailsPage';
 
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

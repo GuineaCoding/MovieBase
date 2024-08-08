@@ -107,3 +107,22 @@ export const fetchPopularActors = async () => {
   }
   return response.json();
 };
+
+export const fetchActorDetails = async (actorId) => {
+  const url = `https://api.themoviedb.org/3/person/${actorId}?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US`;
+  const response = await fetch(url);
+  if (!response.ok) {
+      throw new Error('Failed to fetch actor details');
+  }
+  return response.json();
+};
+
+export const fetchActorMovies = async (actorId) => {
+  const response = await fetch(
+      `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US`
+  );
+  if (!response.ok) {
+      throw new Error(`Failed to fetch movies for actor, status: ${response.status}`);
+  }
+  return response.json();
+};
