@@ -87,3 +87,23 @@ export const fetchGenreMovies = async (genreId) => {
   }
   return response.json();
 };
+
+export const fetchPopularMovies = async () => {
+  const response = await fetch(
+      `https://api.themoviedb.org/3/movie/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=1`
+  );
+  if (!response.ok) {
+      throw new Error(`Failed to fetch popular movies, status: ${response.status}`);
+  }
+  return response.json();
+};
+
+export const fetchPopularActors = async () => {
+  const response = await fetch(
+      `https://api.themoviedb.org/3/person/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=1`
+  );
+  if (!response.ok) {
+      throw new Error(`Failed to fetch popular actors, status: ${response.status}`);
+  }
+  return response.json();
+};

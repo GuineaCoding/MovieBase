@@ -13,6 +13,8 @@ import MoviesContextProvider from "./contexts/moviesContext";
 import AddMovieReviewPage from './pages/addMovieReviewPage';
 import GenresPage from './pages/genresPage';
 import GenreDetailsPage from './pages/genreDetailsPage';
+import PopularMoviesPage from './pages/popularMoviesPage';
+import ActorsPage from './pages/actorsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +42,8 @@ const App = () => {
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/genres" element={<GenresPage />} />
         <Route path="/genres/:genreId" element={<GenreDetailsPage />} />
+        <Route path="/popular" element={<PopularMoviesPage />} />
+        <Route path="/actors" element={<ActorsPage />} />
         {/* <Route path="/featured" element={<FeaturedFilmsPage />} />
         <Route path="/boxoffice" element={<BoxOfficePage />} />
         <Route path="/movie/:id" element={<MovieDetailsPage />} />
