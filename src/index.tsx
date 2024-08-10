@@ -17,6 +17,7 @@ import PopularMoviesPage from './pages/popularMoviesPage';
 import ActorsPage from './pages/actorsPage';
 import ActorDetailsPage from './pages/actorDetailsPage';
 import TVSeriesPage from './pages/TVSeriesPage';
+import FantasyMovieForm from './pages/myFantasyMovie';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,10 +49,7 @@ const App = () => {
         <Route path="/actors" element={<ActorsPage />} />
         <Route path="/actors/:id" element={<ActorDetailsPage />} />
         <Route path="/tvseries" element={<TVSeriesPage />} />
-        {/* <Route path="/featured" element={<FeaturedFilmsPage />} />
-        <Route path="/boxoffice" element={<BoxOfficePage />} />
-        <Route path="/movie/:id" element={<MovieDetailsPage />} />
-        <Route path="/director/:id" element={<DirectorDetailPage />} /> */}
+        <Route path="/create-movie" element={<FantasyMovieForm />} />
         </Routes>
         </MoviesContextProvider>
       </BrowserRouter>
