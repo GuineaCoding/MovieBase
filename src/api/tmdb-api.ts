@@ -137,3 +137,13 @@ export const fetchTVSeries = async () => {
   }
   return response.json();
 };
+
+
+export const getMovieCredits = async (id) => {
+  const url = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch movie credits');
+  }
+  return response.json();
+};

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
-import { Typography, Paper, CircularProgress, Grid, Card, CardMedia, CardContent, Link } from '@mui/material';
+import { Typography, Paper, CircularProgress, Grid, Card, CardMedia, CardContent, Link, List, ListItem } from '@mui/material';
 import { fetchActorDetails, fetchActorMovies } from '../api/tmdb-api';
 
 const ActorDetailsPage = () => {
@@ -9,7 +9,7 @@ const ActorDetailsPage = () => {
     const { data: actorDetails, isLoading: isLoadingDetails, isError: isErrorDetails, error: errorDetails } = useQuery(['actorDetails', id], () => fetchActorDetails(id));
     const { data: actorMovies, isLoading: isLoadingMovies } = useQuery(['actorMovies', id], () => fetchActorMovies(id));
 
-    if (isLoadingDetails || isLoadingMovies) return <CircularProgress />;
+    if (isLoadingDetails || isLoadingMovies) return <CircularProgress style={{ display: 'block', margin: '0 auto' }} />;
     if (isErrorDetails) return <Typography color="error">Error: {errorDetails.message}</Typography>;
 
     return (
@@ -33,16 +33,18 @@ const ActorDetailsPage = () => {
                     <Typography variant="subtitle1" style={{ marginTop: 20 }}>
                         Born: {new Date(actorDetails.birthday).toLocaleDateString()}
                     </Typography>
-                    <div>
-                        <Typography variant="h6" gutterBottom>
-                            Movies:
-                        </Typography>
+                    <Typography variant="h6" gutterBottom>
+                        Movies:
+                    </Typography>
+                    <List>
                         {actorMovies.cast.map((movie) => (
-                            <Link key={movie.id} href={`/movies/${movie.id}`} underline="hover">
-                                {movie.title}
-                            </Link>
+                            <ListItem key={movie.id}>
+                                <Link href={`/movies/${movie.id}`} underline="hover" color="inherit">
+                                    {`${movie.title} (${new Date(movie.release_date).getFullYear()})`}
+                                </Link>
+                            </ListItem>
                         ))}
-                    </div>
+                    </List>
                 </Grid>
             </Grid>
         </Paper>
