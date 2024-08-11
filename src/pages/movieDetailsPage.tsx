@@ -16,28 +16,19 @@ import {
   Avatar
 } from "@mui/material";
 import Spinner from '../components/spinner';
-import { getMovie, getMovieCredits  } from '../api/tmdb-api';
+import { getMovie, getMovieCredits } from '../api/tmdb-api';
 
-const MovieDetailsPage: React.FC = () => {
+const MovieDetailsPage = () => {
   const { id } = useParams();
-  const {
-    data: movie,
-    error,
-    isLoading,
-    isError
-  } = useQuery<MovieDetailsProps, Error>(["movie", id], () => getMovie(id || ""), {
-    onSuccess: data => {
-      // Log the movie data to the console when data is successfully fetched
-      console.log("Movie Details Data:", data);
-    }
-  });
-  const { data: credits, error: creditsError, isLoading: creditsLoading, isError: creditsIsError } = useQuery(['movieCredits', id], () => getMovieCredits(id));
-  if (isLoading) {
+  const { data: movie, isLoading: movieLoading, isError: movieIsError, error: movieError } = useQuery(['movie', id], () => getMovie(id));
+  const { data: credits, isLoading: creditsLoading, isError: creditsIsError, error: creditsError } = useQuery(['movieCredits', id], () => getMovieCredits(id));
+
+  if (movieLoading || creditsLoading) {
     return <Spinner />;
   }
 
-  if (isError) {
-    return <Typography variant="h6" color="error">{(error as Error).message}</Typography>;
+  if (movieIsError) {
+    return <Typography variant="h6" color="error">{movieError.message}</Typography>;
   }
 
   if (creditsIsError) {
@@ -69,54 +60,45 @@ const MovieDetailsPage: React.FC = () => {
           <Typography variant="body2">Vote Average: {movie.vote_average} ({movie.vote_count} votes)</Typography>
           <Typography variant="body2">Popularity: {movie.popularity}</Typography>
           {movie.homepage && (
-            <Link href={movie.homepage} target="_blank" rel="noopener noreferrer">
-              Visit Official Website
-            </Link>
+            <Link href={movie.homepage} target="_blank" rel="noopener noreferrer">Visit Official Website</Link>
           )}
           <Typography variant="h6" gutterBottom>Genres:</Typography>
           {movie.genres.map(genre => (
-            <Link component={RouterLink} to={`/genres/${genre.id}`} key={genre.id} style={{ marginRight: 8 }}>
-              {genre.name}
-            </Link>
+            <Link component={RouterLink} to={`/genres/${genre.id}`} key={genre.id} style={{ marginRight: 8 }}>{genre.name}</Link>
           ))}
           <Typography variant="h6" gutterBottom>Production Companies:</Typography>
           {movie.production_companies.map(company => (
-            <Link key={company.id} href={`/companies/${company.id}`} style={{ display: 'block' }}>
-              {company.name}
-            </Link>
+            <Link key={company.id} href={`/companies/${company.id}`}>{company.name}</Link>
           ))}
           <Typography variant="h6" gutterBottom>Production Countries:</Typography>
           {movie.production_countries.map(country => (
-            <Link key={country.iso_3166_1} href={`/countries/${country.iso_3166_1}`} style={{ display: 'block' }}>
-              {country.name}
-            </Link>
+            <Link key={country.iso_3166_1} href={`/countries/${country.iso_3166_1}`}>{country.name}</Link>
           ))}
           <Typography variant="h6" gutterBottom>Spoken Languages:</Typography>
           {movie.spoken_languages.map(language => (
-            <Typography key={language.iso_639_1} style={{ display: 'block' }}>
-              {language.name} ({language.english_name})
-            </Typography>
+            <Typography key={language.iso_639_1}>{language.name} ({language.english_name})</Typography>
           ))}
           {movie.imdb_id && (
-            <Link href={`https://www.imdb.com/title/${movie.imdb_id}`} target="_blank" rel="noopener noreferrer">
-              View on IMDb
-            </Link>
+            <Link href={`https://www.imdb.com/title/${movie.imdb_id}`} target="_blank" rel="noopener noreferrer">View on IMDb</Link>
           )}
-          {movie.credits && movie.credits.cast && (
-            <>
-              <Typography variant="h6" gutterBottom>Cast:</Typography>
-              <List>
+          <Typography variant="h6" gutterBottom>Cast:</Typography>
+          <List>
             {credits.cast.slice(0, 10).map((actor) => (
               <ListItem key={actor.cast_id}>
                 <ListItemAvatar>
                   <Avatar src={`https://image.tmdb.org/t/p/w92${actor.profile_path}`} alt={actor.name} />
                 </ListItemAvatar>
-                <ListItemText primary={actor.name} secondary={actor.character} />
+                <ListItemText
+                  primary={
+                    <Link component={RouterLink} to={`/actors/${actor.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      {actor.name}
+                    </Link>
+                  }
+                  secondary={actor.character}
+                />
               </ListItem>
             ))}
           </List>
-            </>
-          )}
         </Grid>
       </Grid>
     </Paper>

@@ -147,3 +147,20 @@ export const getMovieCredits = async (id) => {
   }
   return response.json();
 };
+
+export const fetchCompanyDetails = async (companyId) => {
+  const response = await fetch(`https://api.themoviedb.org/3/company/${companyId}?api_key=${import.meta.env.VITE_TMDB_KEY}`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
+export const getMoviesByCountry = async (countryCode) => {
+  const url = `https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&with_origin_country=${countryCode}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch movies from country');
+  }
+  return response.json();
+};
