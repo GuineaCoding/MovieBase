@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { Grid, Paper, Typography, Card, CardContent, CardMedia, TextField, MenuItem, FormControl, Select, InputLabel, Box } from '@mui/material';
 import Spinner from '../components/spinner';
 import { fetchTVSeries } from '../api/tmdb-api';
 
-// Define the filtering functions
+// Define the filtering functions directly in this file
 const releaseYearFilter = (series, year) => !year || (series.first_air_date && series.first_air_date.startsWith(year));
 const popularityFilter = (series, popularity) => !popularity || series.popularity >= parseInt(popularity);
 
@@ -40,7 +41,7 @@ const TVSeriesPage = () => {
                         onChange={handleSortChange}
                         displayEmpty
                     >
-                        <MenuItem value=""><em></em></MenuItem>
+                        <MenuItem value=""><em>None</em></MenuItem>
                         <MenuItem value="popularity">Popularity</MenuItem>
                         <MenuItem value="first_air_date">Release Date</MenuItem>
                     </Select>
@@ -67,18 +68,23 @@ const TVSeriesPage = () => {
                 <Grid container spacing={2}>
                     {filteredAndSortedSeries?.map((series) => (
                         <Grid item xs={12} sm={6} md={4} key={series.id}>
-                            <Card>
+                            <Card sx={{ display: 'flex', flexDirection: 'column', minHeight: 400 }}>
                                 <CardMedia
                                     component="img"
-                                    height="140"
+                                    sx={{ height: 250 }}  
                                     image={`https://image.tmdb.org/t/p/w500${series.poster_path}`}
                                     alt={series.name}
                                 />
-                                <CardContent>
-                                    <Typography variant="h6">{series.name}</Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {series.overview}
+                                <CardContent sx={{ flexGrow: 1, minHeight: 310 }}>  
+                                    <Typography variant="h6" gutterBottom>
+                                        <RouterLink to={`/series/${series.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            {series.name}
+                                        </RouterLink>
                                     </Typography>
+                                    <Typography variant="body2" color="textSecondary">{series.overview}</Typography>
+                                    <Typography variant="body2" color="textSecondary">First Air Date: {new Date(series.first_air_date).toLocaleDateString()}</Typography>
+                                    <Typography variant="body2" color="textSecondary">Popularity: {series.popularity}</Typography>
+                                    <Typography variant="body2" color="textSecondary">Vote Average: {series.vote_average} ({series.vote_count} votes)</Typography>
                                 </CardContent>
                             </Card>
                         </Grid>

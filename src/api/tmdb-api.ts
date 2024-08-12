@@ -164,3 +164,12 @@ export const getMoviesByCountry = async (countryCode) => {
   }
   return response.json();
 };
+
+export const fetchSeriesDetails = async (id) => {
+  const url = `https://api.themoviedb.org/3/tv/${id}?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch TV series details');
+  }
+  return response.json();
+};

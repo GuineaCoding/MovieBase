@@ -20,6 +20,7 @@ import TVSeriesPage from './pages/TVSeriesPage';
 import FantasyMovieForm from './pages/myFantasyMovie';
 import CompanyDetailsPage from './pages/companyDetailsPage';
 import CountryMoviesPage from './pages/CountryMoviesPage';
+import TVSeriesDetailsPage from './pages/TVSeriesDetailsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +55,7 @@ const App = () => {
         <Route path="/create-movie" element={<FantasyMovieForm />} />
         <Route path="/companies/:companyId" element={<CompanyDetailsPage />} />
         <Route path="/countries/:countryCode" element={<CountryMoviesPage />} />
+        <Route path="/series/:id" element={<TVSeriesDetailsPage />} />
         </Routes>
         </MoviesContextProvider>
       </BrowserRouter>
