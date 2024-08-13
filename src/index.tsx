@@ -1,11 +1,11 @@
 import React from "react";
-import ReactDOM from 'react-dom/client'
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Navigate, Routes } from "react-router-dom";
 import HomePage from "./pages/homePage";
 import MovieDetailsPage from "./pages/movieDetailsPage";
 import FavouriteMoviesPage from "./pages/favouriteMoviesPage";
 import MovieReviewPage from "./pages/movieReviewPage";
-import UpcomingMoviesPage from "./pages/upcomingMovies"; 
+import UpcomingMoviesPage from "./pages/upcomingMovies";
 import SiteHeader from './components/siteHeader';
 import { QueryClientProvider, QueryClient } from "react-query";
 import { ReactQueryDevtools } from 'react-query/devtools';
@@ -21,12 +21,13 @@ import FantasyMovieForm from './pages/myFantasyMovie';
 import CompanyDetailsPage from './pages/companyDetailsPage';
 import CountryMoviesPage from './pages/CountryMoviesPage';
 import TVSeriesDetailsPage from './pages/TVSeriesDetailsPage';
+import { LanguageProvider } from './components/language';  
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 360000,
-      refetchInterval: 360000, 
+      refetchInterval: 360000,
       refetchOnWindowFocus: false
     },
   },
@@ -35,37 +36,39 @@ const queryClient = new QueryClient({
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <SiteHeader />
+      <LanguageProvider> 
+        <BrowserRouter>
+          <SiteHeader />
           <MoviesContextProvider>
             <Routes>
-        <Route path="/movies/favourites" element={<FavouriteMoviesPage />} />
-        <Route path="/reviews/form" element={<AddMovieReviewPage/>} />
-        <Route path="/movies/:id" element={<MovieDetailsPage />} />
-        <Route path="/movies/upcoming" element={<UpcomingMoviesPage />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/reviews/:id" element={<MovieReviewPage />} />
-        <Route path="*" element={<Navigate to="/" />} />
-        <Route path="/genres" element={<GenresPage />} />
-        <Route path="/genres/:genreId" element={<GenreDetailsPage />} />
-        <Route path="/popular" element={<PopularMoviesPage />} />
-        <Route path="/actors" element={<ActorsPage />} />
-        <Route path="/actors/:id" element={<ActorDetailsPage />} />
-        <Route path="/tvseries" element={<TVSeriesPage />} />
-        <Route path="/create-movie" element={<FantasyMovieForm />} />
-        <Route path="/companies/:companyId" element={<CompanyDetailsPage />} />
-        <Route path="/countries/:countryCode" element={<CountryMoviesPage />} />
-        <Route path="/series/:id" element={<TVSeriesDetailsPage />} />
-        </Routes>
-        </MoviesContextProvider>
-      </BrowserRouter>
+              <Route path="/movies/favourites" element={<FavouriteMoviesPage />} />
+              <Route path="/reviews/form" element={<AddMovieReviewPage />} />
+              <Route path="/movies/:id" element={<MovieDetailsPage />} />
+              <Route path="/movies/upcoming" element={<UpcomingMoviesPage />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/reviews/:id" element={<MovieReviewPage />} />
+              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/genres" element={<GenresPage />} />
+              <Route path="/genres/:genreId" element={<GenreDetailsPage />} />
+              <Route path="/popular" element={<PopularMoviesPage />} />
+              <Route path="/actors" element={<ActorsPage />} />
+              <Route path="/actors/:id" element={<ActorDetailsPage />} />
+              <Route path="/tvseries" element={<TVSeriesPage />} />
+              <Route path="/create-movie" element={<FantasyMovieForm />} />
+              <Route path="/companies/:companyId" element={<CompanyDetailsPage />} />
+              <Route path="/countries/:countryCode" element={<CountryMoviesPage />} />
+              <Route path="/series/:id" element={<TVSeriesDetailsPage />} />
+            </Routes>
+          </MoviesContextProvider>
+        </BrowserRouter>
+      </LanguageProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
-)
+);

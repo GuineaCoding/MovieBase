@@ -3,17 +3,18 @@ import PageTemplate from "../components/templateMovieListPage";
 import { getMovies } from "../api/tmdb-api";
 import useFiltering from "../hooks/useFiltering";
 import MovieFilterUI from "../components/movieFilterUI";
-import { DiscoverMovies } from "../types/interfaces";
 import { useQuery } from "react-query";
 import Spinner from "../components/spinner";
 import AddToFavouritesIcon from '../components/cardIcons/addToFavourites';
-import { TextField, MenuItem, FormControl, Select, InputLabel, Box, Pagination } from '@mui/material';
+import { TextField, MenuItem, FormControl, Select, InputLabel, Box, Pagination, Typography } from '@mui/material';
+import { useLanguage } from "../components/language";
 
 const HomePage = () => {
     const [page, setPage] = useState(1);
     const [sortProperty, setSortProperty] = useState('');
+    const { language } = useLanguage(); 
 
-    const { data, error, isLoading, isError } = useQuery(['discover', page], () => getMovies(page), {
+    const { data, error, isLoading, isError } = useQuery(['discover', page, language], () => getMovies(page, language), {
         keepPreviousData: true
     });
 

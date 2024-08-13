@@ -6,6 +6,7 @@ import { fetchGenres } from "../api/tmdb-api";
 import { Grid, Paper, Typography } from '@mui/material';
 
 const GenresPage = () => {
+    
     const { data, error, isLoading, isError } = useQuery('genres', fetchGenres);
 
     if (isLoading) return <Spinner />;

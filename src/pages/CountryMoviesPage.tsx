@@ -4,12 +4,14 @@ import { useQuery } from 'react-query';
 import { Typography, Grid, Card, CardContent, CardMedia, Box } from '@mui/material';
 import Spinner from '../components/spinner';
 import { getMoviesByCountry } from '../api/tmdb-api';
+import { useLanguage } from '../components/language';  
 
 const CountryMoviesPage = () => {
+  const { language } = useLanguage();
   const { countryCode } = useParams();
-  const { data, isLoading, isError, error } = useQuery(['moviesByCountry', countryCode], () => getMoviesByCountry(countryCode), {
+  const { data, isLoading, isError, error } = useQuery(['moviesByCountry', countryCode, language], () => getMoviesByCountry(countryCode, language), {
     onSuccess: (data) => {
-      console.log("Fetched movies data:", data); // Logs fetched data
+      console.log("Fetched movies data:", data); 
     }
   });
 

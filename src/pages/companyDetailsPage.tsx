@@ -4,11 +4,13 @@ import { useQuery } from 'react-query';
 import { Typography, Paper, CircularProgress, Box } from '@mui/material';
 import { Card, CardMedia } from '@mui/material';
 import { fetchCompanyDetails } from '../api/tmdb-api'
+import { useLanguage } from '../components/language';  
 
 
 const CompanyDetailsPage = () => {
+  const { language } = useLanguage(); 
     const { companyId } = useParams();
-    const { data, error, isLoading, isError } = useQuery(['companyDetails', companyId], () => fetchCompanyDetails(companyId));
+    const { data, error, isLoading, isError } = useQuery(['companyDetails', companyId, language], () => fetchCompanyDetails(companyId, language));
   
     if (isLoading) {
       return <CircularProgress />;

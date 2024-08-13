@@ -3,11 +3,13 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { Typography, Paper, CircularProgress, Grid, Card, CardMedia, CardContent, Link, List, ListItem } from '@mui/material';
 import { fetchActorDetails, fetchActorMovies } from '../api/tmdb-api';
+import { useLanguage } from '../components/language';  
 
 const ActorDetailsPage = () => {
     const { id } = useParams();
-    const { data: actorDetails, isLoading: isLoadingDetails, isError: isErrorDetails, error: errorDetails } = useQuery(['actorDetails', id], () => fetchActorDetails(id));
-    const { data: actorMovies, isLoading: isLoadingMovies } = useQuery(['actorMovies', id], () => fetchActorMovies(id));
+    const { language } = useLanguage();  
+    const { data: actorDetails, isLoading: isLoadingDetails, isError: isErrorDetails, error: errorDetails } = useQuery(['actorDetails', id, language], () => fetchActorDetails(id, language));
+    const { data: actorMovies, isLoading: isLoadingMovies } = useQuery(['actorMovies', id, language], () => fetchActorMovies(id, language));
 
     if (isLoadingDetails || isLoadingMovies) return <CircularProgress style={{ display: 'block', margin: '0 auto' }} />;
     if (isErrorDetails) return <Typography color="error">Error: {errorDetails.message}</Typography>;
