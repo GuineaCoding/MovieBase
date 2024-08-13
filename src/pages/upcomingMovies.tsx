@@ -6,9 +6,12 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { MoviesContext } from '../contexts/moviesContext';
 import { Pagination, Box } from '@mui/material';
 import { red, blue } from '@mui/material/colors';
+import { useLanguage } from '../components/language';
+
 const UpcomingMoviesPage = () => {
+  const { language } = useLanguage();
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError, error } = useQuery(['upcomingMovies', page], () => getUpcomingMovies(page), {
+  const { data, isLoading, isError, error } = useQuery(['upcomingMovies', page, language], () => getUpcomingMovies(page, language), {
     keepPreviousData: true 
   });
   const { addToMustWatch, mustWatch } = useContext(MoviesContext);

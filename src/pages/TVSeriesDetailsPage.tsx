@@ -19,10 +19,12 @@ import {
 } from '@mui/material';
 import Spinner from '../components/spinner';
 import { fetchSeriesDetails } from '../api/tmdb-api';
+import { useLanguage } from '../components/language';
 
 const TVSeriesDetailsPage = () => {
+  const { language } = useLanguage();
   const { id } = useParams();
-  const { data: series, error, isLoading, isError } = useQuery(['tvSeriesDetails', id], () => fetchSeriesDetails(id));
+  const { data: series, error, isLoading, isError } = useQuery(['tvSeriesDetails', id, language], () => fetchSeriesDetails(id, language));
 
   if (isLoading) return <Spinner />;
   if (isError) return <Typography variant="h6" color="error">{error.message}</Typography>;

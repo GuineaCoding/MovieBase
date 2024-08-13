@@ -17,11 +17,13 @@ import {
 } from "@mui/material";
 import Spinner from '../components/spinner';
 import { getMovie, getMovieCredits } from '../api/tmdb-api';
+import { useLanguage } from '../components/language';
 
 const MovieDetailsPage = () => {
   const { id } = useParams();
-  const { data: movie, isLoading: movieLoading, isError: movieIsError, error: movieError } = useQuery(['movie', id], () => getMovie(id));
-  const { data: credits, isLoading: creditsLoading, isError: creditsIsError, error: creditsError } = useQuery(['movieCredits', id], () => getMovieCredits(id));
+  const { language } = useLanguage();
+  const { data: movie, isLoading: movieLoading, isError: movieIsError, error: movieError } = useQuery(['movie', id, language], () => getMovie(id, language));
+  const { data: credits, isLoading: creditsLoading, isError: creditsIsError, error: creditsError } = useQuery(['movieCredits', id, language], () => getMovieCredits(id, language));
 
   if (movieLoading || creditsLoading) {
     return <Spinner />;

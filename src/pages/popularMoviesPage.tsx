@@ -4,11 +4,13 @@ import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
 import { Grid, Paper, Typography, Card, CardMedia, CardContent, Box, Pagination } from '@mui/material';
 import { fetchPopularMovies } from '../api/tmdb-api';
+import { useLanguage } from '../components/language';
 
 const PopularMoviesPage = () => {
+    const { language } = useLanguage();
     const [page, setPage] = React.useState(1);
 
-    const { data, error, isLoading, isError } = useQuery(['popularMovies', page], () => fetchPopularMovies(page));
+    const { data, error, isLoading, isError } = useQuery(['popularMovies', page, language], () => fetchPopularMovies(page, language));
 
     const handlePageChange = (event, value) => {
         setPage(value); 

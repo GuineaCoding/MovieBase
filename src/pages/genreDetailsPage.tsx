@@ -6,6 +6,7 @@ import { Grid, Paper, Typography } from '@mui/material';
 import { fetchGenreMovies } from "../api/tmdb-api";
 
 const GenreDetailsPage = () => {
+    
     const { genreId } = useParams();
     const { data, error, isLoading, isError } = useQuery(['genreMovies', genreId], () => fetchGenreMovies(genreId));
 

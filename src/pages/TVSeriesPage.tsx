@@ -7,17 +7,19 @@ import {
 } from '@mui/material';
 import Spinner from '../components/spinner';
 import { fetchTVSeries } from '../api/tmdb-api';
+import { useLanguage } from '../components/language';
 
 const releaseYearFilter = (series, year) => !year || (series.first_air_date && series.first_air_date.startsWith(year));
 const popularityFilter = (series, popularity) => !popularity || series.popularity >= parseInt(popularity);
 
 const TVSeriesPage = () => {
+    const { language } = useLanguage();
     const [page, setPage] = useState(1); 
     const [sortProperty, setSortProperty] = useState('');
     const [releaseYear, setReleaseYear] = useState('');
     const [minimumPopularity, setMinimumPopularity] = useState('');
 
-    const { data, error, isLoading, isError } = useQuery(['tvSeries', page], () => fetchTVSeries(page), {
+    const { data, error, isLoading, isError } = useQuery(['tvSeries', page, language], () => fetchTVSeries(page, language), {
         keepPreviousData: true, 
     });
 

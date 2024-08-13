@@ -4,10 +4,12 @@ import Spinner from '../components/spinner';
 import GenreItem from '../components/genresPage/index';
 import { fetchGenres } from "../api/tmdb-api";
 import { Grid, Paper, Typography } from '@mui/material';
+import { useLanguage } from '../components/language';
 
 const GenresPage = () => {
-    
-    const { data, error, isLoading, isError } = useQuery('genres', fetchGenres);
+    const { language } = useLanguage();
+    // Adjust the useQuery call to pass the language to fetchGenres
+    const { data, error, isLoading, isError } = useQuery(['genres', language], () => fetchGenres(language));
 
     if (isLoading) return <Spinner />;
     if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
