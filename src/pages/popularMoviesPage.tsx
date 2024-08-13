@@ -1,11 +1,18 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
-import { Grid, Paper, Typography, Card, CardMedia, CardContent } from '@mui/material';
+import { Grid, Paper, Typography, Card, CardMedia, CardContent, Box, Pagination } from '@mui/material';
 import { fetchPopularMovies } from '../api/tmdb-api';
 
 const PopularMoviesPage = () => {
-    const { data, error, isLoading, isError } = useQuery('popularMovies', fetchPopularMovies);
+    const [page, setPage] = React.useState(1);
+
+    const { data, error, isLoading, isError } = useQuery(['popularMovies', page], () => fetchPopularMovies(page));
+
+    const handlePageChange = (event, value) => {
+        setPage(value); 
+    };
 
     if (isLoading) return <Spinner />;
     if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
@@ -25,13 +32,24 @@ const PopularMoviesPage = () => {
                             />
                             <CardContent>
                                 <Typography gutterBottom variant="h6" component="div">
-                                    {movie.title}
+                                    <Link to={`/movies/${movie.id}`} style={{ textDecoration: 'none' }}>{movie.title}</Link>
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Release Date: {movie.release_date}
+                                </Typography>
+                                <Typography variant="body2">
+                                    {movie.overview}
                                 </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
+            {data?.total_pages > 1 && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+                    <Pagination count={data.total_pages} page={page} onChange={handlePageChange} />
+                </Box>
+            )}
         </Paper>
     );
 };

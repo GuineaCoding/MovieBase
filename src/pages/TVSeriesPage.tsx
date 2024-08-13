@@ -1,26 +1,36 @@
 import React, { useState } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useQuery } from 'react-query';
-import { Grid, Paper, Typography, Card, CardContent, CardMedia, TextField, MenuItem, FormControl, Select, InputLabel, Box } from '@mui/material';
+import {
+  Grid, Paper, Typography, Card, CardContent, CardMedia, TextField,
+  MenuItem, FormControl, Select, InputLabel, Box, Pagination
+} from '@mui/material';
 import Spinner from '../components/spinner';
 import { fetchTVSeries } from '../api/tmdb-api';
 
-// Define the filtering functions directly in this file
 const releaseYearFilter = (series, year) => !year || (series.first_air_date && series.first_air_date.startsWith(year));
 const popularityFilter = (series, popularity) => !popularity || series.popularity >= parseInt(popularity);
 
 const TVSeriesPage = () => {
-    const { data, error, isLoading, isError } = useQuery('tvSeries', fetchTVSeries);
+    const [page, setPage] = useState(1); 
     const [sortProperty, setSortProperty] = useState('');
     const [releaseYear, setReleaseYear] = useState('');
     const [minimumPopularity, setMinimumPopularity] = useState('');
 
-    if (isLoading) return <Spinner />;
-    if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
+    const { data, error, isLoading, isError } = useQuery(['tvSeries', page], () => fetchTVSeries(page), {
+        keepPreviousData: true, 
+    });
 
     const handleSortChange = (event) => {
         setSortProperty(event.target.value);
     };
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
+
+    if (isLoading) return <Spinner />;
+    if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
 
     const filteredAndSortedSeries = data?.results.filter(series => 
         releaseYearFilter(series, releaseYear) && popularityFilter(series, minimumPopularity)
@@ -75,7 +85,7 @@ const TVSeriesPage = () => {
                                     image={`https://image.tmdb.org/t/p/w500${series.poster_path}`}
                                     alt={series.name}
                                 />
-                                <CardContent sx={{ flexGrow: 1, minHeight: 310 }}>  
+                                <CardContent sx={{ flexGrow: 1, minHeight: 150 }}>  
                                     <Typography variant="h6" gutterBottom>
                                         <RouterLink to={`/series/${series.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                             {series.name}
@@ -90,6 +100,11 @@ const TVSeriesPage = () => {
                         </Grid>
                     ))}
                 </Grid>
+                {data?.total_pages > 1 && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+                        <Pagination count={data.total_pages} page={page} onChange={handlePageChange} />
+                    </Box>
+                )}
             </Paper>
         </>
     );

@@ -1,15 +1,15 @@
-export const getMovies = () => {
+export const getMovies = (page = 1) => {
   return fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&include_adult=false&include_video=false&page=1`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&include_adult=false&include_video=false&page=${page}`
   ).then((response) => {
     if (!response.ok)
       throw new Error(`Unable to fetch movies. Response status: ${response.status}`);
     return response.json();
-  })
-    .catch((error) => {
-      throw error
-    });
+  }).catch((error) => {
+    throw error;
+  });
 };
+
   
 export const getMovie = (id: string) => {
   return fetch(
@@ -52,23 +52,24 @@ export const getMovie = (id: string) => {
       });
   };
 
-  export const getMovieReviews = (id: string | number) => { //movie id can be string or number
+  export const getMovieReviews = (id: string | number) => { 
     return fetch(
       `https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${import.meta.env.VITE_TMDB_KEY}`
     )
       .then((res) => res.json())
       .then((json) => {
-        // console.log(json.results);
+       
         return json.results;
       });
   };
-  export const getUpcomingMovies = () => {
+  export const getUpcomingMovies = (page = 1) => {
     return fetch(
-      `https://api.themoviedb.org/3/movie/upcoming?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=1`
+      `https://api.themoviedb.org/3/movie/upcoming?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=${page}`
     )
     .then(res => res.json())
-    .then(json => json.results);
+    .then(json => json); 
   };
+  
   
  export const fetchGenres = async () => {
     const response = await fetch(
@@ -88,9 +89,9 @@ export const fetchGenreMovies = async (genreId) => {
   return response.json();
 };
 
-export const fetchPopularMovies = async () => {
+export const fetchPopularMovies = async (page = 1) => {
   const response = await fetch(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=1`
+      `https://api.themoviedb.org/3/movie/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=${page}`
   );
   if (!response.ok) {
       throw new Error(`Failed to fetch popular movies, status: ${response.status}`);
@@ -98,9 +99,10 @@ export const fetchPopularMovies = async () => {
   return response.json();
 };
 
-export const fetchPopularActors = async () => {
+
+export const fetchPopularActors = async (page = 1) => {
   const response = await fetch(
-      `https://api.themoviedb.org/3/person/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=1`
+      `https://api.themoviedb.org/3/person/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=${page}`
   );
   if (!response.ok) {
       throw new Error(`Failed to fetch popular actors, status: ${response.status}`);
@@ -127,17 +129,14 @@ export const fetchActorMovies = async (actorId) => {
   return response.json();
 };
 
-
-export const fetchTVSeries = async () => {
-  const response = await fetch(
-      `https://api.themoviedb.org/3/tv/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&page=1`
-  );
+export const fetchTVSeries = async (page = 1) => {
+  const url = `https://api.themoviedb.org/3/tv/popular?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US&&page=${page}`;
+  const response = await fetch(url);
   if (!response.ok) {
-      throw new Error(`Failed to fetch TV series, status: ${response.status}`);
+    throw new Error('Failed to fetch TV series');
   }
   return response.json();
 };
-
 
 export const getMovieCredits = async (id) => {
   const url = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_KEY}&language=en-US`;
