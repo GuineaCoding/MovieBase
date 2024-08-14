@@ -171,3 +171,39 @@ export const fetchSeriesDetails = async (id, language = 'en-US') => {
   }
   return response.json();
 };
+
+
+export const searchMovies = async ({
+  query,
+  language = 'en-US',
+  page = 1,
+  include_adult = false,
+  primary_release_year,
+  region,
+  year
+}) => {
+  let url = `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&query=${encodeURIComponent(query)}&language=${language}&page=${page}&include_adult=${include_adult}`;
+
+  if (primary_release_year) {
+    url += `&primary_release_year=${primary_release_year}`;
+  }
+  if (region) {
+    url += `&region=${region}`;
+  }
+  if (year) {
+    url += `&year=${year}`;
+  }
+
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch search results, status: ${response.status}`);
+  }
+
+  return response.json();
+};

@@ -22,6 +22,7 @@ import CompanyDetailsPage from './pages/companyDetailsPage';
 import CountryMoviesPage from './pages/CountryMoviesPage';
 import TVSeriesDetailsPage from './pages/TVSeriesDetailsPage';
 import { LanguageProvider } from './components/language';  
+import SearchPage from './pages/SearchPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +59,7 @@ const App = () => {
               <Route path="/companies/:companyId" element={<CompanyDetailsPage />} />
               <Route path="/countries/:countryCode" element={<CountryMoviesPage />} />
               <Route path="/series/:id" element={<TVSeriesDetailsPage />} />
+              <Route path="/search" element={<SearchPage />} />
             </Routes>
           </MoviesContextProvider>
         </BrowserRouter>
