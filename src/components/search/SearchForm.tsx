@@ -1,81 +1,61 @@
-import React, { useState } from 'react';
-import { TextField, Button, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import React from 'react';
+import {
+  TextField, Button, Box, Typography, Checkbox, FormControlLabel
+} from '@mui/material';
 
-interface SearchParams {
-  query: string;
-  genre: string;
-  year: string;
-  includeAdult: boolean;
-}
-
-interface SearchFormProps {
-  onSearch: (searchParams: SearchParams) => void;
-}
-
-const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
-  const [searchParams, setSearchParams] = useState<SearchParams>({
-    query: '',
-    genre: '',
-    year: '',
-    includeAdult: false,
-  });
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setSearchParams(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchParams(prev => ({ ...prev, includeAdult: event.target.checked }));
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSearch(searchParams);
+const SearchForm = ({ searchParams, setSearchParams, handleSearch }) => {
+  const handleChange = (event) => {
+    const { name, value, checked, type } = event.target;
+    setSearchParams(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Box component="form" onSubmit={handleSearch} noValidate sx={{ mb: 2 }}>
       <TextField
-        label="Search Query"
-        variant="outlined"
         name="query"
+        label="Search Query"
+        fullWidth
         value={searchParams.query}
-        onChange={handleInputChange}
-        fullWidth
-        margin="normal"
+        onChange={handleChange}
+        sx={{ my: 2 }}
       />
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Genre</InputLabel>
-        <Select
-          name="genre"
-          value={searchParams.genre}
-          onChange={handleInputChange as any}
-        >
-          {/* Populate with genres */}
-          <MenuItem value={28}>Action</MenuItem>
-          <MenuItem value={12}>Adventure</MenuItem>
-          {/* Add other genres */}
-        </Select>
-      </FormControl>
       <TextField
+        name="primaryReleaseYear"
+        label="Primary Release Year"
         type="number"
-        label="Year"
-        variant="outlined"
-        name="year"
-        value={searchParams.year}
-        onChange={handleInputChange}
         fullWidth
-        margin="normal"
+        value={searchParams.primaryReleaseYear}
+        onChange={handleChange}
+        sx={{ my: 2 }}
       />
-      <FormGroup>
-        <FormControlLabel
-          control={<Checkbox checked={searchParams.includeAdult} onChange={handleCheckboxChange} />}
-          label="Include Adult"
-        />
-      </FormGroup>
-      <Button type="submit" variant="contained" color="primary">Search</Button>
-    </form>
+      <TextField
+        name="year"
+        label="Year"
+        type="number"
+        fullWidth
+        value={searchParams.year}
+        onChange={handleChange}
+        sx={{ my: 2 }}
+      />
+      <TextField
+        name="region"
+        label="Region"
+        fullWidth
+        value={searchParams.region}
+        onChange={handleChange}
+        sx={{ my: 2 }}
+      />
+      <FormControlLabel
+        control={<Checkbox checked={searchParams.includeAdult} onChange={handleChange} name="includeAdult" />}
+        label="Include Adult"
+      />
+      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+        Search
+      </Button>
+    </Box>
   );
 };
 
