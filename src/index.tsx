@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Navigate, Routes } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { AuthProvider } from './components/authenthication/index';
+import { AuthProvider } from './components/authenthication';
 import HomePage from "./pages/homePage";
 import SignInPage from "./pages/sign-in";
 import SignUpPage from "./pages/sign-up";

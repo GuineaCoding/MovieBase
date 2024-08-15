@@ -1,64 +1,75 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import {supabase} from '../../../src/supbase'
+
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-    useEffect(() => {
-
-        const session = supabase.auth.session();
-        setUser(session?.user ?? null);
-        setLoading(false);
-
-        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-            setUser(session?.user ?? null);
-        });
-
-        return () => {
-            listener.unsubscribe();
-        };
-    }, []);
-
-    const signIn = async (email, password) => {
-        try {
-            setLoading(true);
-            const { error, user } = await supabase.auth.signIn({ email, password });
-            setUser(user);
-            setLoading(false);
-            if (error) throw error;
-        } catch (error) {
-            alert(error.error_description || error.message);
-            setLoading(false);
-        }
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
     };
 
-    const signOut = async () => {
-        try {
-            setLoading(true);
-            const { error } = await supabase.auth.signOut();
-            setUser(null);
-            setLoading(false);
-            if (error) throw error;
-        } catch (error) {
-            alert(error.error_description || error.message);
-            setLoading(false);
-        }
-    };
+    checkSession();
 
-    const value = {
-        user,
-        signIn,
-        signOut,
-        loading
-    };
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
 
-    return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const { error } = await supabase.auth.signIn({ email, password });
+    if (error) console.error('Login error', error.message);
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) console.error('Signup error', error.message);
+  };
+
+  if (!session) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h1>Login or Register</h1>
+        <div>
+          <button onClick={() => supabase.auth.signIn({ provider: 'google' })}>
+            Sign In/Up with Google
+          </button>
+        </div>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+          />
+          <button type="submit">Login</button>
+        </form>
+        <button onClick={handleSignup}>Register</button>
+      </div>
+    );
+  } else {
+    return <>{children}</>;
+  }
 };
