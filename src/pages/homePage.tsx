@@ -68,7 +68,7 @@ const HomePage = () => {
             <PageTemplate
                 title="Discover Movies"
                 movies={sortedAndFilteredMovies}
-                action={(movie) => <AddToFavouritesIcon {...movie} />}
+                action={(movie) => <AddToFavouritesIcon movie_id={movie.id} />}
             />
             {data?.total_pages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
