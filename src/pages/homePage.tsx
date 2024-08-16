@@ -70,16 +70,6 @@ const HomePage = () => {
                 movies={sortedAndFilteredMovies}
                 action={(movie) => <AddToFavouritesIcon {...movie} />}
             />
-            <MovieFilterUI
-                onFilterValuesChange={(type, value) => {
-                    setFilterValues(prev => prev.map(filter => ({
-                        ...filter,
-                        value: filter.name === type ? value : filter.value
-                    })));
-                }}
-                titleFilter={filterValues.find(f => f.name === "title")?.value || ""}
-                genreFilter={filterValues.find(f => f.name === "genre")?.value || ""}
-            />
             {data?.total_pages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
                     <Pagination count={data.total_pages} page={page} onChange={handlePageChange} />

@@ -1,11 +1,14 @@
-import React, { useState, MouseEvent, useContext } from "react";
+import React, { useState, useEffect, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { AppBar, Toolbar, Typography, IconButton, Button, MenuItem, Menu, Select, styled } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useLanguage } from "../../components/language";
-import { AuthContext } from '../../components/authenthication'; 
+import { createClient } from '@supabase/supabase-js';
+import { supabaseConfig } from '../../supbase';
+
+const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
 
 const styles = {
   title: {
@@ -25,10 +28,38 @@ const SiteHeader = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const { language, switchLanguage } = useLanguage();
-  const { session, setSession } = useContext(AuthContext) || { session: null, setSession: () => {} };
+  const [session, setSession] = useState(null);
 
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        setSession(session);
+        console.log("Session checked on load:", session);
+      } catch (error) {
+        console.error("Error getting session:", error);
+      }
 
-  console.log("Current AuthContext:", { session });
+      const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+        console.log("Auth state changed:", event, session);
+        setSession(session);
+      });
+
+      return () => listener.subscription.unsubscribe();
+    };
+
+    checkSession();
+  }, []);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Logout failed:", error);
+    } else {
+      setSession(null);
+      navigate("/signin");
+    }
+  };
 
   const menuOptions = [
     { label: "Home", path: "/" },
@@ -45,26 +76,6 @@ const SiteHeader = () => {
     { code: 'de-DE', label: 'Deutsch' }
   ];
 
-  const handleMenuSelect = (pageURL: string) => {
-    console.log("Navigating to:", pageURL);
-    navigate(pageURL);
-  };
-
-  const handleMenu = (event: MouseEvent<HTMLButtonElement>) => {
-    console.log("Opening menu for:", event.currentTarget);
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleLanguageChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    console.log("Language changed to:", event.target.value);
-    switchLanguage(event.target.value as string); 
-  };
-
-  const handleLogout = () => {
-    console.log("Logging out, clearing session.");
-    setSession(null);
-  };
-
   return (
     <>
       <AppBar position="fixed" elevation={0} color="primary">
@@ -77,7 +88,7 @@ const SiteHeader = () => {
           </Typography>
           <Select
             value={language}
-            onChange={handleLanguageChange}
+            onChange={(e) => switchLanguage(e.target.value as string)}
             sx={styles.languageSelector}
           >
             {languages.map(lang => (
@@ -100,7 +111,7 @@ const SiteHeader = () => {
                 aria-label="menu"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
-                onClick={handleMenu}
+                onClick={(event) => setAnchorEl(event.currentTarget)}
                 color="inherit"
                 size="large"
               >
@@ -122,27 +133,18 @@ const SiteHeader = () => {
                 onClose={() => setAnchorEl(null)}
               >
                 {menuOptions.map((opt) => (
-                  <MenuItem
-                    key={opt.label}
-                    onClick={() => handleMenuSelect(opt.path)}
-                  >
+                  <MenuItem key={opt.label} onClick={() => navigate(opt.path)}>
                     {opt.label}
                   </MenuItem>
                 ))}
               </Menu>
             </>
           ) : (
-            <>
-              {menuOptions.map((opt) => (
-                <Button
-                  key={opt.label}
-                  color="inherit"
-                  onClick={() => handleMenuSelect(opt.path)}
-                >
-                  {opt.label}
-                </Button>
-              ))}
-            </>
+            menuOptions.map((opt) => (
+              <Button key={opt.label} color="inherit" onClick={() => navigate(opt.path)}>
+                {opt.label}
+              </Button>
+            ))
           )}
         </Toolbar>
       </AppBar>

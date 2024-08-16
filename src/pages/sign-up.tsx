@@ -1,37 +1,60 @@
-// // src/components/SignUp.js
-// import React, { useState } from 'react';
-// import { supabase } from '../supbase';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, TextField, Button, Typography } from '@mui/material';
+import { AuthContext } from '../components/authenthication/';
 
-// const SignUp = () => {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const [message, setMessage] = useState('');
+export default function Signup() {
+    const { supabase, setSession } = useContext(AuthContext);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-//   const handleSignUp = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     const { error } = await supabase.auth.signUp({ email, password });
-//     if (error) {
-//       setMessage('Error signing up: ' + error.message);
-//     } else {
-//       setMessage('Registration successful, check your email to confirm your account!');
-//     }
-//     setLoading(false);
-//   };
+    const handleSignup = async (e) => {
+        e.preventDefault();
+        const { error, session } = await supabase.auth.signUp({ email, password });
+        if (!error && session) {
+            setSession(session);
+            navigate('/'); 
+        } else {
+            console.error('Signup error:', error?.message);
+        }
+    };
 
-//   return (
-//     <div>
-//       <form onSubmit={handleSignUp}>
-//         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-//         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-//         <button type="submit" disabled={loading}>
-//           {loading ? 'Loading...' : 'Sign Up'}
-//         </button>
-//       </form>
-//       {message && <p>{message}</p>}
-//     </div>
-//   );
-// };
-
-// export default SignUp;
+    return (
+        <Container component="main" maxWidth="xs">
+            <Typography component="h1" variant="h5">Register</Typography>
+            <form onSubmit={handleSignup} style={{ marginTop: 8 }}>
+                <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Email Address"
+                    autoComplete="email"
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="outlined"
+                    color="secondary"
+                >
+                    Register
+                </Button>
+            </form>
+        </Container>
+    );
+}
