@@ -1,4 +1,3 @@
-// src/index.tsx
 import React from "react";
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Navigate, Routes } from "react-router-dom";
@@ -6,8 +5,8 @@ import { QueryClientProvider, QueryClient } from "react-query";
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { AuthProvider } from './components/authenthication';
 import HomePage from "./pages/homePage";
-import SignInPage from "./pages/sign-in";
-import SignUpPage from "./pages/sign-up";
+// import SignInPage from "./pages/sign-in";
+// import SignUpPage from "./pages/sign-up";
 import MovieDetailsPage from "./pages/movieDetailsPage";
 import FavouriteMoviesPage from "./pages/favouriteMoviesPage";
 import MovieReviewPage from "./pages/movieReviewPage";
@@ -48,8 +47,8 @@ const App = () => {
             <MoviesContextProvider>
               <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/signin" element={<SignInPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
+                {/* <Route path="/signin" element={<SignInPage />} />
+                <Route path="/signup" element={<SignUpPage />} /> */}
                 <Route path="/movies/favourites" element={<FavouriteMoviesPage />} />
                 <Route path="/movies/:id" element={<MovieDetailsPage />} />
                 <Route path="/movies/upcoming" element={<UpcomingMoviesPage />} />

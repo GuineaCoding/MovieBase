@@ -1,10 +1,11 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState, MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { AppBar, Toolbar, Typography, IconButton, Button, MenuItem, Menu, Select, styled } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useLanguage } from "../../components/language"; 
+import { useLanguage } from "../../components/language";
+import { AuthContext } from '../../components/authenthication'; 
 
 const styles = {
   title: {
@@ -23,7 +24,11 @@ const SiteHeader = () => {
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
-  const { language, switchLanguage } = useLanguage(); // Use the useLanguage hook
+  const { language, switchLanguage } = useLanguage();
+  const { session, setSession } = useContext(AuthContext) || { session: null, setSession: () => {} };
+
+
+  console.log("Current AuthContext:", { session });
 
   const menuOptions = [
     { label: "Home", path: "/" },
@@ -41,15 +46,23 @@ const SiteHeader = () => {
   ];
 
   const handleMenuSelect = (pageURL: string) => {
+    console.log("Navigating to:", pageURL);
     navigate(pageURL);
   };
 
   const handleMenu = (event: MouseEvent<HTMLButtonElement>) => {
+    console.log("Opening menu for:", event.currentTarget);
     setAnchorEl(event.currentTarget);
   };
 
   const handleLanguageChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    console.log("Language changed to:", event.target.value);
     switchLanguage(event.target.value as string); 
+  };
+
+  const handleLogout = () => {
+    console.log("Logging out, clearing session.");
+    setSession(null);
   };
 
   return (
@@ -73,6 +86,14 @@ const SiteHeader = () => {
               </MenuItem>
             ))}
           </Select>
+          {!session ? (
+            <>
+              <Button color="inherit" onClick={() => navigate("/signin")}>Login</Button>
+              <Button color="inherit" onClick={() => navigate("/signup")}>Sign Up</Button>
+            </>
+          ) : (
+            <Button color="inherit" onClick={handleLogout}>Logout</Button>
+          )}
           {isMobile ? (
             <>
               <IconButton
