@@ -40,6 +40,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, action, onUpcomingPage }) 
 
   return (
     <Card sx={styles.card}>
+            <CardMedia
+        sx={styles.media}
+        image={movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : img}
+        title={movie.title}
+      />
       <CardHeader
         avatar={
           isFavourite || isInMustWatch ? (
@@ -53,20 +58,16 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, action, onUpcomingPage }) 
         }
         title={<Typography variant="h5" component="p">{movie.title}</Typography>}
       />
-      <CardMedia
-        sx={styles.media}
-        image={movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : img}
-        title={movie.title}
-      />
+
       <CardContent>
         <Grid container>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <Typography variant="h6" component="p">
               <CalendarIcon fontSize="small" />
               {movie.release_date}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <Typography variant="h6" component="p">
               <StarRateIcon fontSize="small" />
               {movie.vote_average}

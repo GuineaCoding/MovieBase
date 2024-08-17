@@ -16,6 +16,10 @@ const styles = {
   },
   languageSelector: {
     color: 'white',
+  },
+  selectionsSelector: {
+    color: 'white',
+    marginLeft: '10px',
   }
 };
 
@@ -29,6 +33,7 @@ const SiteHeader = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const { language, switchLanguage } = useLanguage();
   const [session, setSession] = useState(null);
+  const [selection, setSelection] = useState('');
 
   useEffect(() => {
     const checkSession = async () => {
@@ -65,8 +70,16 @@ const SiteHeader = () => {
     { label: "Home", path: "/" },
     { label: "Upcoming", path: "/movies/upcoming" },
     { label: "Favorites", path: "/movies/favourites" },
-    { label: "Option 3", path: "/" },
-    { label: "Option 4", path: "/" },
+  ];
+
+  const selectionsMenuOptions = [
+    { label: "Home", path: "/" },
+    { label: "Upcoming Movies", path: "/movies/upcoming" },
+    { label: "Genres", path: "/genres" },
+    { label: "Popular Movies", path: "/popular" },
+    { label: "Actors", path: "/actors" },
+    { label: "TV Series", path: "/tvseries" },
+    { label: "Favorites", path: "/favorites" }
   ];
 
   const languages = [
@@ -81,7 +94,7 @@ const SiteHeader = () => {
       <AppBar position="fixed" elevation={0} color="primary">
         <Toolbar>
           <Typography variant="h4" sx={styles.title}>
-            TMDB Client
+            MOVIEBASE
           </Typography>
           <Typography variant="h6" sx={styles.title}>
             All you ever wanted to know about Movies!
@@ -97,6 +110,24 @@ const SiteHeader = () => {
               </MenuItem>
             ))}
           </Select>
+<Select
+  value={selection}
+  onChange={(e) => {
+    setSelection(e.target.value as string);
+    navigate(e.target.value as string);
+  }}
+  displayEmpty
+  sx={styles.selectionsSelector}
+>
+  <MenuItem value="" disabled>
+    Selections
+  </MenuItem>
+  {selectionsMenuOptions.map(option => (
+    <MenuItem key={option.label} value={option.path}>
+      {option.label}
+    </MenuItem>
+  ))}
+</Select>
           {!session ? (
             <>
               <Button color="inherit" onClick={() => navigate("/signin")}>Login</Button>

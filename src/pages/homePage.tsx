@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PageTemplate from "../components/templateMovieListPage";
 import { getMovies } from "../api/tmdb-api";
 import useFiltering from "../hooks/useFiltering";
-import MovieFilterUI from "../components/movieFilterUI";
 import { useQuery } from "react-query";
 import Spinner from "../components/spinner";
 import AddToFavouritesIcon from '../components/cardIcons/addToFavourites';
@@ -50,25 +49,37 @@ const HomePage = () => {
         <>
             <Box sx={{ width: '100%', marginBottom: 2 }}>
                 <FormControl fullWidth>
-                    <InputLabel id="sort-label">Sort By</InputLabel>
+                    <InputLabel id="sort-label"></InputLabel>
                     <Select
                         labelId="sort-label"
                         value={sortProperty}
-                        label="Sort By"
                         onChange={handleSortChange}
                         displayEmpty
                     >
-                        <MenuItem value=""><em>None</em></MenuItem>
+                        <MenuItem value=""><em>Sort By</em></MenuItem>
                         <MenuItem value="popularity">Popularity</MenuItem>
                         <MenuItem value="release_date">Release Date</MenuItem>
                         <MenuItem value="runtime">Runtime</MenuItem>
                     </Select>
                 </FormControl>
             </Box>
+            {console.log("Sorted and filtered movies:", sortedAndFilteredMovies)}
             <PageTemplate
                 title="Discover Movies"
                 movies={sortedAndFilteredMovies}
-                action={(movie) => <AddToFavouritesIcon movie_id={movie.id} />}
+                action={(movie) => {
+                    console.log("Passing movie object to AddToFavouritesIcon:", movie);
+                    return                     <AddToFavouritesIcon
+                    movie_id={movie.id}
+                    image_url={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    rating={movie.vote_average}
+                    title={movie.title}
+                    overview={movie.overview}
+                    popularity={movie.popularity}
+                    release_date={movie.release_date}
+                    vote_count={movie.vote_count}
+                />;
+                }}
             />
             {data?.total_pages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
@@ -77,6 +88,8 @@ const HomePage = () => {
             )}
         </>
     );
+    
+    
 };
 
 export default HomePage;

@@ -4,24 +4,20 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AuthContext } from '../authenthication';
 
-const AddToFavouritesIcon = ({ movie_id }) => {
+const AddToFavouritesIcon = ({ movie_id, image_url, rating, title, overview, popularity, release_date, vote_count, vote_average }) => {
     const { supabase } = useContext(AuthContext);
     const [user, setUser] = useState(null);
     const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
-        async function checkSession() {
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                if (error) throw error;
-                setUser(session?.user);
-                checkFavorite(session.user.id);
-            } catch (error) {
-                console.error('Session check failed:', error);
-            }
-        }
+        const checkSession = async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error) throw error;
+            setUser(session?.user);
+            checkFavorite(session.user.id);
+        };
 
-        async function checkFavorite(userId) {
+        const checkFavorite = async (userId) => {
             const { data, error } = await supabase
                 .from('favorites')
                 .select("*")
@@ -32,7 +28,7 @@ const AddToFavouritesIcon = ({ movie_id }) => {
             } else {
                 setIsFavorite(data.length > 0);
             }
-        }
+        };
 
         checkSession();
         const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -40,9 +36,7 @@ const AddToFavouritesIcon = ({ movie_id }) => {
             checkFavorite(session.user.id);
         });
 
-        return () => {
-            listener.subscription.unsubscribe();
-        };
+        return () => listener.subscription.unsubscribe();
     }, [supabase.auth, movie_id]);
 
     const addToFavorites = async () => {
@@ -54,7 +48,18 @@ const AddToFavouritesIcon = ({ movie_id }) => {
 
         console.log("Adding to favorites:", movie_id);
         try {
-            const { data, error } = await supabase.from('favorites').insert([{ user_id: user.id, movie_id }]);
+            const { data, error } = await supabase.from('favorites').insert([{
+                user_id: user.id,
+                movie_id,
+                image_url,
+                rating,
+                title,
+                overview,
+                popularity,
+                release_date,
+                vote_count,
+                vote_average
+            }]);
             if (error) throw error;
             console.log('Added to favorites successfully:', data);
             setIsFavorite(true);
