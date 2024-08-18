@@ -7,30 +7,45 @@ import AddToFavouritesIcon from '../components/cardIcons/addToFavourites';
 import { Grid, Paper, Typography, Pagination } from '@mui/material';
 import { fetchGenreMovies } from "../api/tmdb-api";
 
+interface Movie {
+    id: number;
+    title: string;
+    poster_path: string;
+    vote_average: number;
+    overview: string;
+    popularity: number;
+    release_date: string;
+    vote_count: number;
+}
+
 const GenreDetailsPage = () => {
-    const { genreId } = useParams();
+    const { genreId } = useParams<{ genreId: string }>();
     const [currentPage, setCurrentPage] = useState(1);
 
-    const { data, error, isLoading, isError } = useQuery(['genreMovies', genreId, currentPage], () => fetchGenreMovies(genreId, currentPage), {
-        keepPreviousData: true,
-        onSuccess: (data) => {
-            console.log("Fetched genre movies data:", data);
+    const { data, error, isLoading, isError } = useQuery<{ results: Movie[], total_pages: number }, Error>(
+        ['genreMovies', genreId, currentPage], 
+        () => fetchGenreMovies(genreId!, currentPage),  
+        {
+            keepPreviousData: true,
+            onSuccess: (data) => {
+                console.log("Fetched genre movies data:", data);
+            }
         }
-    });
+    );
 
     // Handle page change
-    const handlePageChange = (event, value) => {
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setCurrentPage(value);
     };
 
     if (isLoading) return <Spinner />;
-    if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
+    if (isError) return <Typography variant="h6" color="error">Error: {error?.message}</Typography>;
 
     return (
         <Paper style={{ padding: '20px', margin: '20px' }}>
             <Typography variant="h4" gutterBottom>Movies in this Genre</Typography>
             <Grid container spacing={2}>
-                {data.results.map((movie) => (
+                {data?.results.map((movie) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
                         <MovieCard 
                             movie={movie}
@@ -50,13 +65,15 @@ const GenreDetailsPage = () => {
                     </Grid>
                 ))}
             </Grid>
-            <Pagination 
-                count={data.total_pages} 
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-                sx={{ marginTop: 2, justifyContent: 'center', display: 'flex' }}
-            />
+            {data && data.total_pages > 1 && (
+                <Pagination 
+                    count={data.total_pages} 
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    sx={{ marginTop: 2, justifyContent: 'center', display: 'flex' }}
+                />
+            )}
         </Paper>
     );
 };

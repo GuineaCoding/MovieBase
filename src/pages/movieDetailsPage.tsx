@@ -17,22 +17,89 @@ import Spinner from '../components/spinner';
 import { getMovie, getMovieCredits } from '../api/tmdb-api';
 import { useLanguage } from '../components/language';
 
+interface Movie {
+  poster_path: string;
+  title: string;
+  tagline: string;
+  overview: string;
+  release_date: string;
+  runtime: number;
+  budget: number;
+  revenue: number;
+  status: string;
+  vote_average: number;
+  vote_count: number;
+  popularity: number;
+  homepage?: string;
+  imdb_id?: string;
+  genres: Genre[];
+  production_companies: Company[];
+  production_countries: Country[];
+  spoken_languages: Language[];
+}
+
+interface Genre {
+  id: string;
+  name: string;
+}
+
+interface Company {
+  id: string;
+  name: string;
+}
+
+interface Country {
+  iso_3166_1: string;
+  name: string;
+}
+
+interface Language {
+  iso_639_1: string;
+  name: string;
+  english_name: string;
+}
+
+interface Cast {
+  cast_id: number;
+  name: string;
+  character: string;
+  profile_path: string;
+}
+
+interface Credits {
+  cast: Cast[];
+}
+
 const MovieDetailsPage = () => {
-  const { id } = useParams();
-  const { language } = useLanguage();
-  const { data: movie, isLoading: movieLoading, isError: movieIsError, error: movieError } = useQuery(['movie', id, language], () => getMovie(id, language));
-  const { data: credits, isLoading: creditsLoading, isError: creditsIsError, error: creditsError } = useQuery(['movieCredits', id, language], () => getMovieCredits(id, language));
+  const { id } = useParams<{ id: string }>();
+  const { language } = useLanguage() as { language: string };
+
+  const { data: movie, isLoading: movieLoading, isError: movieIsError, error: movieError } = useQuery<Movie, Error>(
+    ['movie', id, language],
+    () => getMovie(id!, language),
+    {
+      enabled: !!id
+    }
+  );
+
+  const { data: credits, isLoading: creditsLoading, isError: creditsIsError, error: creditsError } = useQuery<Credits, Error>(
+    ['movieCredits', id, language],
+    () => getMovieCredits(id!, language),
+    {
+      enabled: !!id
+    }
+  );
 
   if (movieLoading || creditsLoading) {
     return <Spinner />;
   }
 
-  if (movieIsError) {
-    return <Typography variant="h6" color="error">{movieError.message}</Typography>;
+  if (movieIsError || !movie) {
+    return <Typography variant="h6" color="error">{(movieError as Error).message}</Typography>;
   }
 
-  if (creditsIsError) {
-    return <Typography variant="h6" color="error">{creditsError.message}</Typography>;
+  if (creditsIsError || !credits) {
+    return <Typography variant="h6" color="error">{(creditsError as Error).message}</Typography>;
   }
 
   return (

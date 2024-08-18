@@ -22,18 +22,23 @@ interface Movie {
 
 interface LanguageContextType {
     language: string;
+    switchLanguage: (lang: string) => void;
 }
 
 const HomePage = () => {
     const [page, setPage] = useState(1);
     const [sortProperty, setSortProperty] = useState<string>('');
-    const { language } = useLanguage() as LanguageContextType; 
+    const { language, switchLanguage } = useLanguage() as LanguageContextType; 
 
-    const { data, error, isLoading, isError } = useQuery<{results: Movie[], total_pages: number}, Error>(['discover', page, language], () => getMovies(page, language), {
-        keepPreviousData: true
-    });
+    const { data, error, isLoading, isError } = useQuery<{results: Movie[], total_pages: number}, Error>(
+        ['discover', page, language], 
+        () => getMovies(page, language),
+        {
+            keepPreviousData: true
+        }
+    );
 
-    const { filterValues, setFilterValues, filterFunction } = useFiltering([
+    const { filterFunction } = useFiltering<Movie>([
         { name: "title", value: "", condition: (movie: Movie, value: string) => !value || movie.title.toLowerCase().includes(value.toLowerCase()) },
         { name: "genre", value: "", condition: (movie: Movie, value: string) => !value || movie.genre_ids.includes(parseInt(value)) },
         { name: "releaseYear", value: "", condition: (movie: Movie, year: string) => !year || (movie.release_date && movie.release_date.startsWith(year)) },
@@ -59,13 +64,13 @@ const HomePage = () => {
     });
 
     if (isLoading) return <Spinner />;
-    if (isError) return <Typography variant="h6" color="error">{error?.message}</Typography>;
+    if (isError) return <Typography variant="h6" color="error">Error: {error?.message}</Typography>;
 
     return (
         <>
-            <Box style={{ padding: '20px', backgroundColor: 'transparent' }}>
+            <Box sx={{ padding: '20px', backgroundColor: 'transparent' }}>
                 <FormControl fullWidth>
-                    <InputLabel id="sort-label"></InputLabel>
+                    <InputLabel id="sort-label">Sort By</InputLabel>
                     <Select
                         labelId="sort-label"
                         value={sortProperty}
@@ -79,23 +84,19 @@ const HomePage = () => {
                     </Select>
                 </FormControl>
             </Box>
-            {console.log("Sorted and filtered movies:", sortedAndFilteredMovies)}
             <PageTemplate 
                 title="Discover Movies"
                 movies={sortedAndFilteredMovies}
-                action={(movie: Movie) => {
-                    console.log("Passing movie object to AddToFavouritesIcon:", movie);
-                    return <AddToFavouritesIcon
-                        movie_id={movie.id}
-                        image_url={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                        rating={movie.vote_average}
-                        title={movie.title}
-                        overview={movie.title} // Assuming overview is mistakenly replaced
-                        popularity={movie.popularity}
-                        release_date={movie.release_date}
-                        vote_count={movie.vote_count}
-                    />;
-                }}
+                action={(movie: Movie) => <AddToFavouritesIcon
+                    movie_id={movie.id}
+                    image_url={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    rating={movie.vote_average}
+                    title={movie.title}
+                    overview={movie.title} // Assuming overview is mistakenly replaced
+                    popularity={movie.popularity}
+                    release_date={movie.release_date}
+                    vote_count={movie.vote_count}
+                />}
             />
             {data?.total_pages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
