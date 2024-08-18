@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, Link as RouterLink } from 'react-router-dom';
+import  { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import {
   Grid, Paper, Typography, Card, CardContent, CardMedia, TextField,

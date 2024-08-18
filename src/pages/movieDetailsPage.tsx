@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import { useQuery } from "react-query";
 import {
@@ -8,7 +7,6 @@ import {
   Card,
   CardMedia,
   Link,
-  Box,
   List,
   ListItem,
   ListItemText,

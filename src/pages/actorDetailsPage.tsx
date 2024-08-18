@@ -1,7 +1,6 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
-import { Typography, Paper, CircularProgress, Grid, Card, CardMedia, CardContent, Link, List, ListItem } from '@mui/material';
+import { Typography, Paper, CircularProgress, Grid, Card, CardMedia, Link, List, ListItem } from '@mui/material';
 import { fetchActorDetails, fetchActorMovies } from '../api/tmdb-api';
 import { useLanguage } from '../components/language';  
 

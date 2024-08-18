@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
 import { Box, Typography } from '@mui/material';

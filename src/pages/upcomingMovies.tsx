@@ -1,8 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import PageTemplate from '../components/templateMovieListPage';
 import { useQuery } from 'react-query';
 import { getUpcomingMovies } from "../api/tmdb-api";
-import { MoviesContext } from '../contexts/moviesContext';
 import { Pagination, Box } from '@mui/material';
 import { useLanguage } from '../components/language';
 import AddToFavouritesIcon from '../components/cardIcons/addToFavourites';

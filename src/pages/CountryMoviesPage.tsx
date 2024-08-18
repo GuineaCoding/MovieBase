@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { Typography, Grid, Card, CardContent, CardMedia, Box } from '@mui/material';

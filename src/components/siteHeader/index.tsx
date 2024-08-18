@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MouseEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -9,7 +9,10 @@ import { createClient } from '@supabase/supabase-js';
 import { supabaseConfig } from '../../supbase';
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
-
+interface LanguageContextType {
+  language: string;
+  switchLanguage: (lang: string) => void;
+}
 const styles = {
   title: {
     flexGrow: 1,

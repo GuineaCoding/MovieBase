@@ -49,8 +49,7 @@ const ReviewForm: React.FC<BaseMovieProps> = (movie) => {
         review.movieId = movie.id;
         review.rating = rating;
         context.addReview(movie, review);
-        setOpen(true); // NEW
-        // console.log(review);
+        setOpen(true); 
     };
 
     return (

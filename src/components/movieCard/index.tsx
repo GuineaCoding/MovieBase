@@ -3,11 +3,9 @@ import { Link } from "react-router-dom";
 import { Card, CardActions, CardContent, CardMedia, CardHeader, Button, Typography, Grid, Box } from "@mui/material";
 import CalendarTodayTwoToneIcon from "@mui/icons-material/CalendarTodayTwoTone"; 
 import StarRateIcon from "@mui/icons-material/StarRate";
-import FavoriteIcon from '@mui/icons-material/Favorite'; 
 import { red, blue } from "@mui/material/colors";
 import img from '../../images/film-poster-placeholder.png';
 import { MoviesContext } from "../../contexts/moviesContext";
-import { BaseMovieProps } from "../../types/interfaces";
 
 const MovieCard = ({ movie, action, onUpcomingPage }) => {
   const { favourites, addToFavorites } = useContext(MoviesContext);

@@ -1,6 +1,6 @@
-import React from 'react';
+
 import {
-  TextField, Button, Box, Typography, Checkbox, FormControlLabel
+  TextField, Button, Box, Checkbox, FormControlLabel
 } from '@mui/material';
 
 const SearchForm = ({ searchParams, setSearchParams, handleSearch }) => {
