@@ -10,7 +10,7 @@ export const getMovies = (page = 1, language = 'en-US') => {
   });
 };
 
-export const getMovie = (id, language = 'en-US') => {
+export const getMovie = (id:string, language = 'en-US') => {
   return fetch(
     `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_KEY}&language=${language}`
   ).then((response) => {
@@ -37,7 +37,7 @@ export const getGenres = (language = 'en-US') => {
   });
 };
 
-export const getMovieImages = (id) => {
+export const getMovieImages = (id:string) => {
   return fetch(
     `https://api.themoviedb.org/3/movie/${id}/images?api_key=${import.meta.env.VITE_TMDB_KEY}`
   ).then((response) => {
@@ -51,7 +51,7 @@ export const getMovieImages = (id) => {
     });
 };
 
-export const getMovieReviews = (id) => {
+export const getMovieReviews = (id:string) => {
   return fetch(
     `https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${import.meta.env.VITE_TMDB_KEY}`
   )
@@ -79,7 +79,7 @@ export const fetchGenres = async (language = 'en-US') => {
   return response.json();
 };
 
-export const fetchGenreMovies = async (genreId, page = 1, language = 'en-US') => {
+export const fetchGenreMovies = async (genreId:string, page = 1, language = 'en-US') => {
   const response = await fetch(
       `https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&with_genres=${genreId}&page=${page}&language=${language}`
   );
@@ -110,7 +110,7 @@ if (!response.ok) {
 return response.json();
 };
 
-export const fetchActorDetails = async (actorId, language = 'en-US') => {
+export const fetchActorDetails = async (actorId:string, language = 'en-US') => {
 const url = `https://api.themoviedb.org/3/person/${actorId}?api_key=${import.meta.env.VITE_TMDB_KEY}&language=${language}`;
 const response = await fetch(url);
 if (!response.ok) {
@@ -119,7 +119,7 @@ if (!response.ok) {
 return response.json();
 };
 
-export const fetchActorMovies = async (actorId, language = 'en-US') => {
+export const fetchActorMovies = async (actorId:string, language = 'en-US') => {
 const response = await fetch(
     `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${import.meta.env.VITE_TMDB_KEY}&language=${language}`
 );
@@ -138,7 +138,7 @@ export const fetchTVSeries = async (page = 1, language = 'en-US') => {
   return response.json();
 };
 
-export const getMovieCredits = async (id, language = 'en-US') => {
+export const getMovieCredits = async (id:string, language = 'en-US') => {
   const url = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_KEY}&language=${language}`;
   const response = await fetch(url);
   if (!response.ok) {
@@ -147,7 +147,7 @@ export const getMovieCredits = async (id, language = 'en-US') => {
   return response.json();
 };
 
-export const fetchCompanyDetails = async (companyId, language = 'en-US') => {
+export const fetchCompanyDetails = async (companyId:string, language = 'en-US') => {
   const response = await fetch(`https://api.themoviedb.org/3/company/${companyId}?api_key=${import.meta.env.VITE_TMDB_KEY}&language=${language}`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -155,7 +155,7 @@ export const fetchCompanyDetails = async (companyId, language = 'en-US') => {
   return response.json();
 };
 
-export const getMoviesByCountry = async (countryCode, language = 'en-US') => {
+export const getMoviesByCountry = async (countryCode:string, language = 'en-US') => {
   const url = `https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&with_origin_country=${countryCode}&language=${language}`;
   const response = await fetch(url);
   if (!response.ok) {
@@ -164,7 +164,7 @@ export const getMoviesByCountry = async (countryCode, language = 'en-US') => {
   return response.json();
 };
 
-export const fetchSeriesDetails = async (id, language = 'en-US') => {
+export const fetchSeriesDetails = async (id:string, language = 'en-US') => {
   const url = `https://api.themoviedb.org/3/tv/${id}?api_key=${import.meta.env.VITE_TMDB_KEY}&language=${language}`;
   const response = await fetch(url);
   if (!response.ok) {
