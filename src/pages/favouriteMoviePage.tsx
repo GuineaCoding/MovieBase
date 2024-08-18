@@ -2,9 +2,21 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../components/authenthication';
 import { CircularProgress, Typography, Box, Link, Container, Card, CardMedia, CardContent, Grid, MenuItem, FormControl, InputLabel, Select, Pagination, Button } from "@mui/material";
 
+interface Favorite {
+    id: number;
+    image_url: string;
+    title: string;
+    rating: number;
+    vote_count: number;
+    popularity: number;
+    release_date: string;
+    overview: string;
+    movie_id: number;
+}
+
 const FavoritesPage = () => {
     const { supabase } = useContext(AuthContext);
-    const [favorites, setFavorites] = useState([]);
+    const [favorites, setFavorites] = useState<Favorite[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [sortOrder, setSortOrder] = useState('desc');
@@ -14,7 +26,7 @@ const FavoritesPage = () => {
 
     useEffect(() => {
         const fetchFavorites = async () => {
-            const { data: { session }, sessionError } = await supabase.auth.getSession();
+            const { data: session, error: sessionError } = await supabase.auth.getSession();
             const user = session?.user;
 
             if (user) {
@@ -42,7 +54,7 @@ const FavoritesPage = () => {
         fetchFavorites();
     }, [supabase.auth, sortOrder, page]);
 
-    const handlePageChange = (event, value) => {
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 

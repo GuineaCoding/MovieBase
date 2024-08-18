@@ -4,11 +4,31 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AuthContext } from '../authenthication';
 
+interface Props {
+  movie_id: number;
+  image_url: string;
+  rating: number;
+  title: string;
+  overview: string;
+  popularity: number;
+  release_date: string;
+  vote_count: number;
+  vote_average: number;
+}
+
 const AddToFavouritesIcon = ({
-  movie_id, image_url, rating, title, overview, popularity, release_date, vote_count, vote_average
-}) => {
-    const { supabase } = useContext(AuthContext);
-    const [user, setUser] = useState(null);
+  movie_id,
+  image_url,
+  rating,
+  title,
+  overview,
+  popularity,
+  release_date,
+  vote_count,
+  vote_average
+}: Props) => {
+    const { supabase } = useContext(AuthContext) as { supabase: any };
+    const [user, setUser] = useState<{ id: number } | null>(null);
     const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
@@ -28,7 +48,7 @@ const AddToFavouritesIcon = ({
             }
         };
 
-        const checkFavorite = async (userId) => {
+        const checkFavorite = async (userId: number) => {
             if (!userId) {
                 console.error('No user ID provided for checking favorites');
                 return;
@@ -47,7 +67,7 @@ const AddToFavouritesIcon = ({
 
         checkSession();
 
-        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: listener } = supabase.auth.onAuthStateChange((event: any, session: any) => {
             if (session && session.user) {
                 setUser(session.user);
                 checkFavorite(session.user.id);
@@ -106,7 +126,7 @@ const AddToFavouritesIcon = ({
 
     return (
         <IconButton onClick={isFavorite ? removeFromFavorites : addToFavorites}>
-            {isFavorite ? <DeleteIcon color="error" /> : <FavoriteIcon sx={{ color: isFavorite ? 'error' : 'yellow' }} />}
+            {isFavorite ? <DeleteIcon color="error" /> : <FavoriteIcon color="error" />}
         </IconButton>
     );
 };

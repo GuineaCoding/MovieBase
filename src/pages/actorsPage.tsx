@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
@@ -6,23 +6,34 @@ import { Grid, Paper, Typography, Card, CardMedia, CardContent, Box, Pagination,
 import { fetchPopularActors } from '../api/tmdb-api';
 import { useLanguage } from '../components/language';  
 
-const ActorsPage = () => {
-    const { language } = useLanguage(); 
-    const [page, setPage] = useState(1);
-    const { data, error, isLoading, isError } = useQuery(['popularActors', page, language], () => fetchPopularActors(page, language));
+interface Actor {
+    id: number;
+    profile_path: string;
+    name: string;
+    known_for: { title: string }[];
+}
 
-    const handlePageChange = (event, value) => {
+interface LanguageContextType {
+    language: string;
+}
+
+const ActorsPage = () => {
+    const { language } = useLanguage() as LanguageContextType;
+    const [page, setPage] = useState<number>(1);
+    const { data, error, isLoading, isError } = useQuery<{ results: Actor[], total_pages: number }, Error>(['popularActors', page, language], () => fetchPopularActors(page, language));
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 
     if (isLoading) return <Spinner />;
-    if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
+    if (isError && error) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
 
     return (
         <Paper style={{ padding: '20px', margin: '20px', backgroundColor: 'transparent' }}>
             <Typography variant="h4" gutterBottom>Popular Actors</Typography>
             <Grid container spacing={2}>
-                {data.results.map((actor) => (
+                {data?.results.map((actor) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={actor.id}>
                         <Card sx={{ backgroundColor: 'darkgreen', color: 'white' }}>
                             <CardMedia
@@ -48,7 +59,7 @@ const ActorsPage = () => {
                     </Grid>
                 ))}
             </Grid>
-            {data.total_pages > 1 && (
+            {data?.total_pages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
                     <Pagination count={data.total_pages} page={page} onChange={handlePageChange} />
                 </Box>

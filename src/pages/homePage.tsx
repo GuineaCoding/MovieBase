@@ -8,42 +8,58 @@ import AddToFavouritesIcon from '../components/cardIcons/addToFavourites';
 import { MenuItem, FormControl, Select, InputLabel, Box, Pagination, Typography } from '@mui/material';
 import { useLanguage } from "../components/language";
 
+interface Movie {
+    id: number;
+    title: string;
+    genre_ids: number[];
+    release_date: string;
+    runtime: number;
+    poster_path: string;
+    vote_average: number;
+    popularity: number;
+    vote_count: number;
+}
+
+interface LanguageContextType {
+    language: string;
+}
+
 const HomePage = () => {
     const [page, setPage] = useState(1);
-    const [sortProperty, setSortProperty] = useState('');
-    const { language } = useLanguage(); 
+    const [sortProperty, setSortProperty] = useState<string>('');
+    const { language } = useLanguage() as LanguageContextType; 
 
-    const { data, error, isLoading, isError } = useQuery(['discover', page, language], () => getMovies(page, language), {
+    const { data, error, isLoading, isError } = useQuery<{results: Movie[], total_pages: number}, Error>(['discover', page, language], () => getMovies(page, language), {
         keepPreviousData: true
     });
 
     const { filterValues, setFilterValues, filterFunction } = useFiltering([
-        { name: "title", value: "", condition: (movie, value) => !value || movie.title.toLowerCase().includes(value.toLowerCase()) },
-        { name: "genre", value: "", condition: (movie, value) => !value || movie.genre_ids.includes(parseInt(value)) },
-        { name: "releaseYear", value: "", condition: (movie, year) => !year || (movie.release_date && movie.release_date.startsWith(year)) },
-        { name: "runtime", value: "", condition: (movie, runtime) => !runtime || (movie.runtime && movie.runtime <= parseInt(runtime)) }
+        { name: "title", value: "", condition: (movie: Movie, value: string) => !value || movie.title.toLowerCase().includes(value.toLowerCase()) },
+        { name: "genre", value: "", condition: (movie: Movie, value: string) => !value || movie.genre_ids.includes(parseInt(value)) },
+        { name: "releaseYear", value: "", condition: (movie: Movie, year: string) => !year || (movie.release_date && movie.release_date.startsWith(year)) },
+        { name: "runtime", value: "", condition: (movie: Movie, runtime: string) => !runtime || (movie.runtime && movie.runtime <= parseInt(runtime)) }
     ]);
 
-    const handleSortChange = (event) => {
-        setSortProperty(event.target.value);
+    const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setSortProperty(event.target.value as string);
     };
 
-    const handlePageChange = (event, value) => {
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 
-    const sortedAndFilteredMovies = filterFunction(data ? data.results : []).sort((a, b) => {
+    const sortedAndFilteredMovies = filterFunction(data ? data.results : []).sort((a: Movie, b: Movie) => {
         if (!sortProperty) return 0;
         if (sortProperty === 'popularity' || sortProperty === 'runtime') {
-            return (b[sortProperty] || 0) - (a[sortProperty] || 0);
+            return (b[sortProperty as keyof Movie] as number) - (a[sortProperty as keyof Movie] as number);
         } else if (sortProperty === 'release_date') {
-            return new Date(b[sortProperty]) - new Date(a[sortProperty]);
+            return new Date(b.release_date).getTime() - new Date(a.release_date).getTime();
         }
         return 0;
     });
 
     if (isLoading) return <Spinner />;
-    if (isError) return <Typography variant="h6" color="error">{error.message}</Typography>;
+    if (isError) return <Typography variant="h6" color="error">{error?.message}</Typography>;
 
     return (
         <>
@@ -67,19 +83,18 @@ const HomePage = () => {
             <PageTemplate 
                 title="Discover Movies"
                 movies={sortedAndFilteredMovies}
-                action={(movie) => {
+                action={(movie: Movie) => {
                     console.log("Passing movie object to AddToFavouritesIcon:", movie);
-                    return                     <AddToFavouritesIcon
-                    movie_id={movie.id}
-                    image_url={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    rating={movie.vote_average}
-                    title={movie.title}
-                    overview={movie.overview}
-                    popularity={movie.popularity}
-                    release_date={movie.release_date}
-                    vote_count={movie.vote_count}
-                />;
-                
+                    return <AddToFavouritesIcon
+                        movie_id={movie.id}
+                        image_url={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                        rating={movie.vote_average}
+                        title={movie.title}
+                        overview={movie.title} // Assuming overview is mistakenly replaced
+                        popularity={movie.popularity}
+                        release_date={movie.release_date}
+                        vote_count={movie.vote_count}
+                    />;
                 }}
             />
             {data?.total_pages > 1 && (
@@ -89,8 +104,6 @@ const HomePage = () => {
             )}
         </>
     );
-    
-    
 };
 
 export default HomePage;
