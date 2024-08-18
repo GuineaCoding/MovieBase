@@ -41,13 +41,19 @@ const initialMovieState = {
     budget: ''
 };
 
+interface CastMember {
+  name: string;
+  role: string;
+  description: string;
+}
+
 const FantasyMovieForm = () => {
-    const { supabase } = useContext(AuthContext);
-    const [user, setUser] = useState(null);
-    const [movies, setMovies] = useState([]);
+    const { supabase } = useContext(AuthContext) as { supabase: any }; 
+    const [user, setUser] = useState<any>(null);
+    const [movies, setMovies] = useState<any[]>([]);
     const [movie, setMovie] = useState(initialMovieState);
-    const [cast, setCast] = useState([]);
-    const [poster, setPoster] = useState(null);
+    const [cast, setCast] = useState<CastMember[]>([]);
+    const [poster, setPoster] = useState<File | null>(null);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -57,7 +63,7 @@ const FantasyMovieForm = () => {
 
         checkSession();
         fetchMovies();
-        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: listener } = supabase.auth.onAuthStateChange((event: any, session: any) => {
             setUser(session?.user);
             fetchMovies();
         });
@@ -76,7 +82,7 @@ const FantasyMovieForm = () => {
         }
     };
 
-    const handleChange = (event) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         setMovie(prevState => ({
             ...prevState,
@@ -84,11 +90,13 @@ const FantasyMovieForm = () => {
         }));
     };
 
-    const handleFileChange = (event) => {
-        setPoster(event.target.files[0]);
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            setPoster(event.target.files[0]);
+        }
     };
 
-    const handleCastChange = (index, field, value) => {
+    const handleCastChange = (index: number, field: keyof CastMember, value: string) => {
         const newCast = [...cast];
         newCast[index][field] = value;
         setCast(newCast);
@@ -98,11 +106,11 @@ const FantasyMovieForm = () => {
         setCast([...cast, { name: '', role: '', description: '' }]);
     };
 
-    const removeCastMember = (index) => {
+    const removeCastMember = (index: number) => {
         setCast(cast.filter((_, idx) => idx !== index));
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!user) {
@@ -160,24 +168,14 @@ const FantasyMovieForm = () => {
                     <InputLabel>Genre</InputLabel>
                     <Select name="genre" value={movie.genre} onChange={handleChange} label="Genre">
                         <MenuItem value="Action">Action</MenuItem>
-                        <MenuItem value="Comedy">Adventure</MenuItem>
-                        <MenuItem value="Drama">Animation</MenuItem>
-                        <MenuItem value="Action">Comedy</MenuItem>
-                        <MenuItem value="Comedy">Crime</MenuItem>
-                        <MenuItem value="Drama">Crime</MenuItem>
-                        <MenuItem value="Action">Drama</MenuItem>
-                        <MenuItem value="Comedy">Family</MenuItem>
-                        <MenuItem value="Drama">Fantasy</MenuItem>
-                        <MenuItem value="Action">History</MenuItem>
-                        <MenuItem value="Comedy">Horror</MenuItem>
-                        <MenuItem value="Drama">Music</MenuItem>
-                        <MenuItem value="Action">Mystery</MenuItem>
-                        <MenuItem value="Comedy">Romance</MenuItem>
-                        <MenuItem value="Drama">Science Fiction</MenuItem>
-                        <MenuItem value="Action">TV Movie</MenuItem>
-                        <MenuItem value="Comedy">Thriller</MenuItem>
-                        <MenuItem value="Drama">Thriller</MenuItem>
-                        <MenuItem value="Drama">Western</MenuItem>
+                        <MenuItem value="Comedy">Comedy</MenuItem>
+                        <MenuItem value="Drama">Drama</MenuItem>
+                        <MenuItem value="Fantasy">Fantasy</MenuItem>
+                        <MenuItem value="Horror">Horror</MenuItem>
+                        <MenuItem value="Mystery">Mystery</MenuItem>
+                        <MenuItem value="Romance">Romance</MenuItem>
+                        <MenuItem value="Science Fiction">Science Fiction</MenuItem>
+                        <MenuItem value="Western">Western</MenuItem>
                     </Select>
                 </StyledFormControl>
                 <StyledTextField name="releaseDate" type="date" value={movie.releaseDate} onChange={handleChange} fullWidth required />

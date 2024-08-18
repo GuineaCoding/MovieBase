@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import {
@@ -8,48 +8,64 @@ import {
 import Spinner from '../components/spinner';
 import { fetchTVSeries } from '../api/tmdb-api';
 import { useLanguage } from '../components/language';
+import { SelectChangeEvent } from '@mui/material/Select';
 
-const releaseYearFilter = (series, year) => !year || (series.first_air_date && series.first_air_date.startsWith(year));
-const popularityFilter = (series, popularity) => !popularity || series.popularity >= parseInt(popularity);
+interface Series {
+  id: string;
+  poster_path: string;
+  name: string;
+  overview: string;
+  first_air_date: string;
+  popularity: number;
+  vote_average: number;
+  vote_count: number;
+}
+
+interface QueryData {
+  results: Series[];
+  total_pages: number;
+}
+
+const releaseYearFilter = (series: Series, year: string) => !year || (series.first_air_date && series.first_air_date.startsWith(year));
+const popularityFilter = (series: Series, popularity: string) => !popularity || series.popularity >= parseInt(popularity);
 
 const TVSeriesPage = () => {
-    const { language } = useLanguage();
-    const [page, setPage] = useState(1); 
-    const [sortProperty, setSortProperty] = useState('');
-    const [releaseYear, setReleaseYear] = useState('');
-    const [minimumPopularity, setMinimumPopularity] = useState('');
+    const { language } = useLanguage() as { language: string; switchLanguage: (lang: string) => void };
+    const [page, setPage] = useState<number>(1);
+    const [sortProperty, setSortProperty] = useState<string>('');
+    const [releaseYear, setReleaseYear] = useState<string>('');
+    const [minimumPopularity, setMinimumPopularity] = useState<string>('');
 
-    const { data, error, isLoading, isError } = useQuery(['tvSeries', page, language], () => fetchTVSeries(page, language), {
-        keepPreviousData: true, 
+    const { data, error, isLoading, isError } = useQuery<QueryData, Error>(['tvSeries', page, language], () => fetchTVSeries(page, language), {
+        keepPreviousData: true,
     });
 
-    const handleSortChange = (event) => {
+    const handleSortChange = (event: SelectChangeEvent<string>) => {
         setSortProperty(event.target.value);
     };
 
-    const handlePageChange = (event, value) => {
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 
     if (isLoading) return <Spinner />;
-    if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
+    if (isError && error) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
 
-    const filteredAndSortedSeries = data?.results.filter(series => 
+    const filteredAndSortedSeries = (data?.results || []).filter(series => 
         releaseYearFilter(series, releaseYear) && popularityFilter(series, minimumPopularity)
     ).sort((a, b) => {
         if (!sortProperty) return 0;
-        return sortProperty === 'popularity' ? b.popularity - a.popularity : new Date(b.first_air_date) - new Date(a.first_air_date);
+        return sortProperty === 'popularity' ? b.popularity - a.popularity : new Date(b.first_air_date).getTime() - new Date(a.first_air_date).getTime();
     });
 
     return (
         <>
             <Box sx={{ width: '100%', marginBottom: 2 }}>
                 <FormControl fullWidth>
-                    <InputLabel id="sort-label"></InputLabel>
+                    <InputLabel id="sort-label">Sort By</InputLabel>
                     <Select
                         labelId="sort-label"
                         value={sortProperty}
-                        label=""
                         onChange={handleSortChange}
                         displayEmpty
                     >
@@ -78,7 +94,7 @@ const TVSeriesPage = () => {
             <Paper style={{ padding: '20px', margin: '20px', backgroundColor: 'transparent' }}>
                 <Typography variant="h4" gutterBottom>Popular TV Series</Typography>
                 <Grid container spacing={2}>
-                    {filteredAndSortedSeries?.map((series) => (
+                    {filteredAndSortedSeries.map((series) => (
                         <Grid item xs={12} sm={6} md={4} key={series.id}>
                             <Card sx={{ backgroundColor: 'darkgreen', color: 'white', display: 'flex', flexDirection: 'column', minHeight: 400 }}>
                                 <CardMedia
@@ -105,7 +121,7 @@ const TVSeriesPage = () => {
                         </Grid>
                     ))}
                 </Grid>
-                {data?.total_pages > 1 && (
+                {data && data.total_pages > 1 && (
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
                         <Pagination count={data.total_pages} page={page} onChange={handlePageChange} />
                     </Box>
