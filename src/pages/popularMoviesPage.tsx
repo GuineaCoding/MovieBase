@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
-import { Grid, Paper, Typography, Card, CardMedia, CardContent, Box, Pagination } from '@mui/material';
+import { Grid, Paper, Typography, Box, Pagination } from '@mui/material';
+import MovieCard from '../components/movieCard'; 
 import { fetchPopularMovies } from '../api/tmdb-api';
 import { useLanguage } from '../components/language';
 
@@ -20,30 +20,12 @@ const PopularMoviesPage = () => {
     if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
 
     return (
-        <Paper style={{ padding: '20px', margin: '20px' }}>
+        <Paper style={{ padding: '20px', margin: '20px', backgroundColor: 'transparent' }}> 
             <Typography variant="h4" gutterBottom>Popular Movies</Typography>
             <Grid container spacing={2}>
                 {data.results.map((movie) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
-                        <Card>
-                            <CardMedia
-                                component="img"
-                                height="140"
-                                image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                                alt={movie.title}
-                            />
-                            <CardContent>
-                                <Typography gutterBottom variant="h6" component="div">
-                                    <Link to={`/movies/${movie.id}`} style={{ textDecoration: 'none' }}>{movie.title}</Link>
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Release Date: {movie.release_date}
-                                </Typography>
-                                <Typography variant="body2">
-                                    {movie.overview}
-                                </Typography>
-                            </CardContent>
-                        </Card>
+                        <MovieCard movie={movie} />  
                     </Grid>
                 ))}
             </Grid>

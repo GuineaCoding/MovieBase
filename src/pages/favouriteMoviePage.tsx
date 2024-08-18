@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../components/authenthication';
-import { CircularProgress, Typography, Box, Link, Container, Card, CardMedia, CardContent, Grid, MenuItem, FormControl, InputLabel, Select, Pagination } from "@mui/material";
+import { CircularProgress, Typography, Box, Link, Container, Card, CardMedia, CardContent, Grid, MenuItem, FormControl, InputLabel, Select, Pagination, Button } from "@mui/material";
 
 const FavoritesPage = () => {
     const { supabase } = useContext(AuthContext);
@@ -86,35 +86,33 @@ const FavoritesPage = () => {
                 <Grid container spacing={4}>
                 {favorites.map((movie) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
-                        <Card>
+                        <Card sx={{ backgroundColor: 'darkgreen', color: 'white', display: 'flex', flexDirection: 'column', minHeight: 400 }}>
                             <CardMedia
                                 component="img"
-                                height="140"
-                                image={`https://image.tmdb.org/t/p/w500/${movie.image_url || 'path/to/default/image.jpg'}`}
+                                sx={{ height: 450 }}  
+                                image={`https://image.tmdb.org/t/p/w500${movie.image_url || 'path/to/default/image.jpg'}`}
                                 alt={movie.title}
                             />
-                            <CardContent>
-                                <Typography gutterBottom variant="h6" component="div">
-                                    <Link href={`/movies/${movie.movie_id}`} color="inherit">
-                                        {movie.title}
-                                    </Link>
+                            <CardContent sx={{ flexGrow: 1, minHeight: 530 }}>
+                                <Typography gutterBottom variant="h6" component="div" sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                                    {movie.title}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body1" sx={{ fontSize: '1rem' }} color="inherit">
                                     Rating: {movie.rating} | Votes: {movie.vote_count}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body1" sx={{ fontSize: '1rem' }} color="inherit">
                                     Popularity: {movie.popularity}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body1" sx={{ fontSize: '1rem' }} color="inherit">
                                     Release Date: {new Date(movie.release_date).toLocaleDateString()}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Added on: {new Date(movie.created_at).toLocaleString()}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body1" sx={{ fontSize: '1rem' }} color="inherit">
                                     Overview: {movie.overview}
                                 </Typography>
                             </CardContent>
+                            <Button component={Link} href={`/movies/${movie.movie_id}`} sx={{ mt: 'auto', bgcolor: 'white', color: 'darkgreen', '&:hover': { bgcolor: 'lightgray' } }}>
+                                More Info
+                            </Button>
                         </Card>
                     </Grid>
                 ))}

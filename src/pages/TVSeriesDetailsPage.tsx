@@ -70,7 +70,7 @@ const TVSeriesDetailsPage = () => {
               <Typography variant="body2">{season.overview}</Typography>
               <CardMedia
                 component="img"
-                height="140"
+                height="30%"
                 image={`https://image.tmdb.org/t/p/w500${season.poster_path}`}
                 alt={season.name}
               />

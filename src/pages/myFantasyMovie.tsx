@@ -1,68 +1,226 @@
-import React, { useState, useEffect } from 'react';
-import { Button, TextField, MenuItem, Select, InputLabel, FormControl, Card, CardContent, Typography } from '@mui/material';
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../components/authenthication';
+import { Button, TextField, FormControl, InputLabel, Select, MenuItem, Typography, IconButton, Input, Grid, Card, CardMedia, CardContent } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import { styled } from '@mui/material/styles';
+
+const StyledTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    marginBottom: '12px', 
+    borderColor: 'green', 
+  }
+});
+
+const StyledFormControl = styled(FormControl)({
+  '& .MuiOutlinedInput-root': {
+    marginBottom: '12px', 
+    borderColor: 'green', 
+  },
+  marginBottom: '12px'
+});
+
+const GreenButton = styled(Button)(({ theme }) => ({
+    backgroundColor: 'green',
+    '&:hover': {
+      backgroundColor: '#045a04',
+    },
+    color: 'white',
+    margin: theme.spacing(1, 0), 
+    width: '100%', 
+}));
+
+const initialMovieState = {
+    title: '',
+    overview: '',
+    genre: '',
+    releaseDate: '',
+    runtime: '',
+    productionCompany: '',
+    director: '',
+    budget: ''
+};
 
 const FantasyMovieForm = () => {
-    const [movie, setMovie] = useState({
-        title: '',
-        overview: '',
-        genre: '',
-        releaseDate: '',
-        runtime: '',
-        productionCompany: ''
-    });
- 
-    const [movies, setMovies] = useState(() => {
-        const savedMovies = sessionStorage.getItem('fantasyMovies');
-        return savedMovies ? JSON.parse(savedMovies) : [];
-    });
+    const { supabase } = useContext(AuthContext);
+    const [user, setUser] = useState(null);
+    const [movies, setMovies] = useState([]);
+    const [movie, setMovie] = useState(initialMovieState);
+    const [cast, setCast] = useState([]);
+    const [poster, setPoster] = useState(null);
 
     useEffect(() => {
-        sessionStorage.setItem('fantasyMovies', JSON.stringify(movies));
-    }, [movies]);
+        const checkSession = async () => {
+            const session = supabase.auth.session();
+            setUser(session?.user);
+        };
+
+        checkSession();
+        fetchMovies();
+        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+            setUser(session?.user);
+            fetchMovies();
+        });
+
+        return () => {
+            listener.subscription.unsubscribe();
+        };
+    }, [supabase.auth]);
+
+    const fetchMovies = async () => {
+        const { data, error } = await supabase.from('myfantasymovie').select('*');
+        if (error) {
+            console.error('Error fetching movies:', error);
+        } else {
+            setMovies(data);
+        }
+    };
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setMovie(prev => ({ ...prev, [name]: value }));
+        setMovie(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
     };
 
-    const handleSubmit = (event) => {
+    const handleFileChange = (event) => {
+        setPoster(event.target.files[0]);
+    };
+
+    const handleCastChange = (index, field, value) => {
+        const newCast = [...cast];
+        newCast[index][field] = value;
+        setCast(newCast);
+    };
+
+    const addCastMember = () => {
+        setCast([...cast, { name: '', role: '', description: '' }]);
+    };
+
+    const removeCastMember = (index) => {
+        setCast(cast.filter((_, idx) => idx !== index));
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        setMovies(prevMovies => [...prevMovies, movie]);
-        setMovie({ title: '', overview: '', genre: '', releaseDate: '', runtime: '', productionCompany: '' });
+
+        if (!user) {
+            alert("Please log in to create a fantasy movie.");
+            return;
+        }
+
+        let posterUrl = '';
+        if (poster) {
+            const fileExt = poster.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const { error: uploadError, data: uploadData } = await supabase.storage
+                .from('posters')
+                .upload(fileName, poster);
+
+            if (uploadError) {
+                console.error('Failed to upload image:', uploadError);
+                alert(`Failed to upload image: ${uploadError.message}`);
+                return;
+            }
+
+            posterUrl = `https://wbzxjkoeievktfrsgsbo.supabase.co/storage/v1/object/public/posters/${fileName}`;
+        }
+
+        try {
+            const { error } = await supabase.from('myfantasymovie').insert([{
+                ...movie,
+                user_id: user.id,
+                poster: posterUrl,
+                releaseDate: new Date(movie.releaseDate).toISOString(),
+                cast: JSON.stringify(cast)
+            }]);
+            if (!error) {
+                alert("Movie added successfully!");
+                setMovie(initialMovieState);
+                setCast([]);
+                setPoster(null);
+                fetchMovies();  // Refresh the list of movies
+            } else {
+                console.error('Failed to add movie:', error);
+                alert("Failed to add movie. Please try again.");
+            }
+        } catch (error) {
+            console.error('Failed to add movie:', error);
+            alert("Failed to add movie. Please try again.");
+        }
     };
 
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <TextField name="title" label="Title" value={movie.title} onChange={handleChange} fullWidth />
-                <TextField name="overview" label="Overview" value={movie.overview} onChange={handleChange} fullWidth multiline rows={4} />
-                <FormControl fullWidth>
+                <StyledTextField name="title" label="Title" value={movie.title} onChange={handleChange} fullWidth required />
+                <StyledTextField name="overview" label="Overview" value={movie.overview} onChange={handleChange} fullWidth multiline rows={4} required />
+                <StyledFormControl fullWidth required>
                     <InputLabel>Genre</InputLabel>
                     <Select name="genre" value={movie.genre} onChange={handleChange} label="Genre">
                         <MenuItem value="Action">Action</MenuItem>
-                        <MenuItem value="Comedy">Comedy</MenuItem>
-                        <MenuItem value="Drama">Drama</MenuItem>
+                        <MenuItem value="Comedy">Adventure</MenuItem>
+                        <MenuItem value="Drama">Animation</MenuItem>
+                        <MenuItem value="Action">Comedy</MenuItem>
+                        <MenuItem value="Comedy">Crime</MenuItem>
+                        <MenuItem value="Drama">Crime</MenuItem>
+                        <MenuItem value="Action">Drama</MenuItem>
+                        <MenuItem value="Comedy">Family</MenuItem>
+                        <MenuItem value="Drama">Fantasy</MenuItem>
+                        <MenuItem value="Action">History</MenuItem>
+                        <MenuItem value="Comedy">Horror</MenuItem>
+                        <MenuItem value="Drama">Music</MenuItem>
+                        <MenuItem value="Action">Mystery</MenuItem>
+                        <MenuItem value="Comedy">Romance</MenuItem>
+                        <MenuItem value="Drama">Science Fiction</MenuItem>
+                        <MenuItem value="Action">TV Movie</MenuItem>
+                        <MenuItem value="Comedy">Thriller</MenuItem>
+                        <MenuItem value="Drama">Thriller</MenuItem>
+                        <MenuItem value="Drama">Western</MenuItem>
                     </Select>
-                </FormControl>
-                <TextField name="releaseDate" type="date" value={movie.releaseDate} onChange={handleChange} fullWidth />
-                <TextField name="runtime" label="Runtime" type="number" value={movie.runtime} onChange={handleChange} fullWidth />
-                <TextField name="productionCompany" label="Production Company" value={movie.productionCompany} onChange={handleChange} fullWidth />
-                <Button type="submit" variant="contained" color="primary">Create Movie</Button>
-            </form>
-            <div>
-                {movies.map((m, index) => (
-                    <Card key={index} style={{ marginTop: 16 }}>
-                        <CardContent>
-                            <Typography variant="h5">{m.title}</Typography>
-                            <Typography variant="body1">{m.overview}</Typography>
-                            <Typography variant="body2">Genre: {m.genre}</Typography>
-                            <Typography variant="body2">Release Date: {m.releaseDate}</Typography>
-                            <Typography variant="body2">Runtime: {m.runtime} minutes</Typography>
-                            <Typography variant="body2">Production: {m.productionCompany}</Typography>
-                        </CardContent>
-                    </Card>
+                </StyledFormControl>
+                <StyledTextField name="releaseDate" type="date" value={movie.releaseDate} onChange={handleChange} fullWidth required />
+                <StyledTextField name="runtime" label="Runtime" type="number" value={movie.runtime} onChange={handleChange} fullWidth required />
+                <StyledTextField name="productionCompany" label="Production Company" value={movie.productionCompany} onChange={handleChange} fullWidth required />
+                <StyledTextField name="director" label="Director" value={movie.director} onChange={handleChange} fullWidth required />
+                <StyledTextField name="budget" label="Budget" type="number" value={movie.budget} onChange={handleChange} fullWidth required />
+                <Input type="file" onChange={handleFileChange} fullWidth required />
+                {cast.map((member, index) => (
+                    <div key={index} style={{ width: '100%' }}>
+                        <StyledTextField label="Cast Name" value={member.name} onChange={(e) => handleCastChange(index, 'name', e.target.value)} fullWidth required />
+                        <StyledTextField label="Role" value={member.role} onChange={(e) => handleCastChange(index, 'role', e.target.value)} fullWidth required />
+                        <StyledTextField label="Description" value={member.description} onChange={(e) => handleCastChange(index, 'description', e.target.value)} fullWidth required />
+                        <IconButton onClick={() => removeCastMember(index)}><RemoveCircleOutlineIcon /></IconButton>
+                    </div>
                 ))}
-            </div>
+                <GreenButton onClick={addCastMember} startIcon={<AddCircleOutlineIcon />} fullWidth>Add Cast Member</GreenButton>
+                <GreenButton type="submit" variant="contained" fullWidth>Create Movie</GreenButton>
+            </form>
+            <Grid container spacing={2}>
+                {movies.map((m, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={index}>
+                        <Card>
+                            <CardMedia
+                                component="img"
+                                image={m.poster || 'https://via.placeholder.com/500'}
+                                alt={m.title}
+                                style={{ height: 500 }}
+                            />
+                            <CardContent>
+                                <Typography variant="h6">{m.title}</Typography>
+                                <Typography variant="body2">{m.overview}</Typography>
+                                <Typography variant="body2">Genre: {m.genre}</Typography>
+                                <Typography variant="body2">Release Date: {new Date(m.releaseDate).toDateString()}</Typography>
+                                <Typography variant="body2">Runtime: {m.runtime} minutes</Typography>
+                                <Typography variant="body2">Production: {m.productionCompany}</Typography>
+                                <Typography variant="body2">Director: {m.director}</Typography>
+                                <Typography variant="body2">Budget: ${m.budget}</Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
         </>
     );
 };

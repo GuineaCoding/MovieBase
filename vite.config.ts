@@ -8,5 +8,10 @@ export default defineConfig({
   },
   build: {
     sourcemap: true, 
+  },
+  optimizeDeps: {
+    exclude: [
+      'chunk-ENK6PFG5.js?v=778a2817'
+    ]
   }
 })

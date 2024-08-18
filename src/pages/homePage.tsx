@@ -47,7 +47,7 @@ const HomePage = () => {
 
     return (
         <>
-            <Box sx={{ width: '100%', marginBottom: 2 }}>
+            <Box style={{ padding: '20px', backgroundColor: 'transparent' }}>
                 <FormControl fullWidth>
                     <InputLabel id="sort-label"></InputLabel>
                     <Select
@@ -64,7 +64,7 @@ const HomePage = () => {
                 </FormControl>
             </Box>
             {console.log("Sorted and filtered movies:", sortedAndFilteredMovies)}
-            <PageTemplate
+            <PageTemplate 
                 title="Discover Movies"
                 movies={sortedAndFilteredMovies}
                 action={(movie) => {
@@ -79,6 +79,7 @@ const HomePage = () => {
                     release_date={movie.release_date}
                     vote_count={movie.vote_count}
                 />;
+                
                 }}
             />
             {data?.total_pages > 1 && (

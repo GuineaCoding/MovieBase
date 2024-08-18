@@ -3,7 +3,7 @@ import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import {
   Grid, Paper, Typography, Card, CardContent, CardMedia, TextField,
-  MenuItem, FormControl, Select, InputLabel, Box, Pagination
+  MenuItem, FormControl, Select, InputLabel, Box, Pagination, Button
 } from '@mui/material';
 import Spinner from '../components/spinner';
 import { fetchTVSeries } from '../api/tmdb-api';
@@ -45,15 +45,15 @@ const TVSeriesPage = () => {
         <>
             <Box sx={{ width: '100%', marginBottom: 2 }}>
                 <FormControl fullWidth>
-                    <InputLabel id="sort-label">Sort By</InputLabel>
+                    <InputLabel id="sort-label"></InputLabel>
                     <Select
                         labelId="sort-label"
                         value={sortProperty}
-                        label="Sort By"
+                        label=""
                         onChange={handleSortChange}
                         displayEmpty
                     >
-                        <MenuItem value=""><em>None</em></MenuItem>
+                        <MenuItem value=""><em>Sort By</em></MenuItem>
                         <MenuItem value="popularity">Popularity</MenuItem>
                         <MenuItem value="first_air_date">Release Date</MenuItem>
                     </Select>
@@ -75,29 +75,32 @@ const TVSeriesPage = () => {
                     margin="normal"
                 />
             </Box>
-            <Paper style={{ padding: '20px', margin: '20px' }}>
+            <Paper style={{ padding: '20px', margin: '20px', backgroundColor: 'transparent' }}>
                 <Typography variant="h4" gutterBottom>Popular TV Series</Typography>
                 <Grid container spacing={2}>
                     {filteredAndSortedSeries?.map((series) => (
                         <Grid item xs={12} sm={6} md={4} key={series.id}>
-                            <Card sx={{ display: 'flex', flexDirection: 'column', minHeight: 400 }}>
+                            <Card sx={{ backgroundColor: 'darkgreen', color: 'white', display: 'flex', flexDirection: 'column', minHeight: 400 }}>
                                 <CardMedia
                                     component="img"
                                     sx={{ height: 250 }}  
                                     image={`https://image.tmdb.org/t/p/w500${series.poster_path}`}
                                     alt={series.name}
                                 />
-                                <CardContent sx={{ flexGrow: 1, minHeight: 150 }}>  
+                                <CardContent sx={{ flexGrow: 1, minHeight: 460 }}>  
                                     <Typography variant="h6" gutterBottom>
                                         <RouterLink to={`/series/${series.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                             {series.name}
                                         </RouterLink>
                                     </Typography>
-                                    <Typography variant="body2" color="textSecondary">{series.overview}</Typography>
-                                    <Typography variant="body2" color="textSecondary">First Air Date: {new Date(series.first_air_date).toLocaleDateString()}</Typography>
-                                    <Typography variant="body2" color="textSecondary">Popularity: {series.popularity}</Typography>
-                                    <Typography variant="body2" color="textSecondary">Vote Average: {series.vote_average} ({series.vote_count} votes)</Typography>
+                                    <Typography variant="body2" color="inherit">{series.overview}</Typography>
+                                    <Typography variant="body2" color="inherit">First Air Date: {new Date(series.first_air_date).toLocaleDateString()}</Typography>
+                                    <Typography variant="body2" color="inherit">Popularity: {series.popularity}</Typography>
+                                    <Typography variant="body2" color="inherit">Vote Average: {series.vote_average} ({series.vote_count} votes)</Typography>
                                 </CardContent>
+                                <Button component={RouterLink} to={`/series/${series.id}`} sx={{ mt: 'auto', bgcolor: 'white', color: 'darkgreen', '&:hover': { bgcolor: 'lightgray' } }}>
+                                    More Info
+                                </Button>
                             </Card>
                         </Grid>
                     ))}

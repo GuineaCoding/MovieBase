@@ -4,7 +4,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AuthContext } from '../authenthication';
 
-const AddToFavouritesIcon = ({ movie_id, image_url, rating, title, overview, popularity, release_date, vote_count, vote_average }) => {
+const AddToFavouritesIcon = ({
+  movie_id, image_url, rating, title, overview, popularity, release_date, vote_count, vote_average
+}) => {
     const { supabase } = useContext(AuthContext);
     const [user, setUser] = useState(null);
     const [isFavorite, setIsFavorite] = useState(false);
@@ -12,12 +14,25 @@ const AddToFavouritesIcon = ({ movie_id, image_url, rating, title, overview, pop
     useEffect(() => {
         const checkSession = async () => {
             const { data: { session }, error } = await supabase.auth.getSession();
-            if (error) throw error;
-            setUser(session?.user);
-            checkFavorite(session.user.id);
+            if (error) {
+                console.error('Session error:', error.message);
+                return; 
+            }
+            if (!session) {
+                console.log('No active session found.');
+                return; 
+            }
+            setUser(session.user);
+            if (session.user) {
+                checkFavorite(session.user.id);
+            }
         };
 
         const checkFavorite = async (userId) => {
+            if (!userId) {
+                console.error('No user ID provided for checking favorites');
+                return;
+            }
             const { data, error } = await supabase
                 .from('favorites')
                 .select("*")
@@ -25,15 +40,20 @@ const AddToFavouritesIcon = ({ movie_id, image_url, rating, title, overview, pop
                 .eq("movie_id", movie_id);
             if (error) {
                 console.error('Error checking favorites:', error);
-            } else {
-                setIsFavorite(data.length > 0);
+                return;
             }
+            setIsFavorite(data.length > 0);
         };
 
         checkSession();
+
         const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-            setUser(session?.user);
-            checkFavorite(session.user.id);
+            if (session && session.user) {
+                setUser(session.user);
+                checkFavorite(session.user.id);
+            } else {
+                setUser(null);
+            }
         });
 
         return () => listener.subscription.unsubscribe();
@@ -46,46 +66,47 @@ const AddToFavouritesIcon = ({ movie_id, image_url, rating, title, overview, pop
             return;
         }
 
-        console.log("Adding to favorites:", movie_id);
-        try {
-            const { data, error } = await supabase.from('favorites').insert([{
-                user_id: user.id,
-                movie_id,
-                image_url,
-                rating,
-                title,
-                overview,
-                popularity,
-                release_date,
-                vote_count,
-                vote_average
-            }]);
-            if (error) throw error;
-            console.log('Added to favorites successfully:', data);
-            setIsFavorite(true);
-        } catch (error) {
+        const { data, error } = await supabase.from('favorites').insert([{
+            user_id: user.id,
+            movie_id,
+            image_url,
+            rating,
+            title,
+            overview,
+            popularity,
+            release_date,
+            vote_count,
+            vote_average
+        }]);
+        if (error) {
             console.error('Error adding to favorites:', error);
+            return;
         }
+        console.log('Added to favorites successfully:', data);
+        setIsFavorite(true);
     };
 
     const removeFromFavorites = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('favorites')
-                .delete()
-                .eq("user_id", user.id)
-                .eq("movie_id", movie_id);
-            if (error) throw error;
-            console.log('Removed from favorites successfully:', data);
-            setIsFavorite(false);
-        } catch (error) {
-            console.error('Error removing from favorites:', error);
+        if (!user || !movie_id) {
+            console.error("No user session or movie ID found for removal.");
+            return;
         }
+        const { data, error } = await supabase
+            .from('favorites')
+            .delete()
+            .eq("user_id", user.id)
+            .eq("movie_id", movie_id);
+        if (error) {
+            console.error('Error removing from favorites:', error);
+            return;
+        }
+        console.log('Removed from favorites successfully:', data);
+        setIsFavorite(false);
     };
 
     return (
         <IconButton onClick={isFavorite ? removeFromFavorites : addToFavorites}>
-            {isFavorite ? <DeleteIcon color="error" /> : <FavoriteIcon color="error" />}
+            {isFavorite ? <DeleteIcon color="error" /> : <FavoriteIcon sx={{ color: isFavorite ? 'error' : 'yellow' }} />}
         </IconButton>
     );
 };

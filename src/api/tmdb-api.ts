@@ -79,15 +79,16 @@ export const fetchGenres = async (language = 'en-US') => {
   return response.json();
 };
 
-export const fetchGenreMovies = async (genreId, language = 'en-US') => {
-const response = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&with_genres=${genreId}&language=${language}`
-);
-if (!response.ok) {
-    throw new Error('Failed to fetch genre movies');
-}
-return response.json();
+export const fetchGenreMovies = async (genreId, page = 1, language = 'en-US') => {
+  const response = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?api_key=${import.meta.env.VITE_TMDB_KEY}&with_genres=${genreId}&page=${page}&language=${language}`
+  );
+  if (!response.ok) {
+      throw new Error('Failed to fetch genre movies');
+  }
+  return response.json();
 };
+
 
 export const fetchPopularMovies = async (page = 1, language = 'en-US') => {
 const response = await fetch(

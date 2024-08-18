@@ -8,7 +8,6 @@ import HomePage from "./pages/homePage";
 import SignInPage from "./pages/sign-in";
 import SignUpPage from "./pages/sign-up";
 import MovieDetailsPage from "./pages/movieDetailsPage";
-import FavouriteMoviesPage from "./pages/favouriteMoviesPage";
 import MovieReviewPage from "./pages/movieReviewPage";
 import UpcomingMoviesPage from "./pages/upcomingMovies";
 import SiteHeader from './components/siteHeader';
@@ -27,6 +26,9 @@ import TVSeriesDetailsPage from "./pages/TVSeriesDetailsPage";
 import SearchPage from './pages/SearchPage';
 import { LanguageProvider } from './components/language';
 import FavoritesPage from './pages/favouriteMoviePage';
+import ProtectedRoute from './components/authenthication/ProtectedRoute';
+import '../src/css/index.css'; 
+import Footer from './components/footer/footer';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,8 +43,8 @@ const queryClient = new QueryClient({
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider> 
-        <LanguageProvider> 
+      <AuthProvider>
+        <LanguageProvider>
           <BrowserRouter>
             <SiteHeader />
             <MoviesContextProvider>
@@ -50,25 +52,26 @@ const App = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/signin" element={<SignInPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
-                <Route path="/movies/favourites" element={<FavouriteMoviesPage />} />
-                <Route path="/movies/:id" element={<MovieDetailsPage />} />
                 <Route path="/movies/upcoming" element={<UpcomingMoviesPage />} />
-                <Route path="/reviews/form" element={<AddMovieReviewPage />} />
-                <Route path="/reviews/:id" element={<MovieReviewPage />} />
                 <Route path="/genres" element={<GenresPage />} />
-                <Route path="/genres/:genreId" element={<GenreDetailsPage />} />
                 <Route path="/popular" element={<PopularMoviesPage />} />
                 <Route path="/actors" element={<ActorsPage />} />
-                <Route path="/actors/:id" element={<ActorDetailsPage />} />
                 <Route path="/tvseries" element={<TVSeriesPage />} />
-                <Route path="/create-movie" element={<FantasyMovieForm />} />
-                <Route path="/companies/:companyId" element={<CompanyDetailsPage />} />
-                <Route path="/countries/:countryCode" element={<CountryMoviesPage />} />
-                <Route path="/series/:id" element={<TVSeriesDetailsPage />} />
-                <Route path="/search" element={<SearchPage />} />
                 <Route path="*" element={<Navigate to="/" />} />
-                <Route path="/favorites" element={<FavoritesPage />}/>
+
+                <Route path="/create-movie" element={<ProtectedRoute><FantasyMovieForm /></ProtectedRoute>} />
+                <Route path="/actors/:id" element={<ProtectedRoute><ActorDetailsPage /></ProtectedRoute>} />
+                <Route path="/series/:id" element={<ProtectedRoute><TVSeriesDetailsPage /></ProtectedRoute>} />
+                <Route path="/genres/:genreId" element={<ProtectedRoute><GenreDetailsPage /></ProtectedRoute>} />
+                <Route path="/reviews/form" element={<ProtectedRoute><AddMovieReviewPage /></ProtectedRoute>} />
+                <Route path="/movies/:id" element={<ProtectedRoute><MovieDetailsPage /></ProtectedRoute>} />
+                <Route path="/reviews/:id" element={<ProtectedRoute><MovieReviewPage /></ProtectedRoute>} />
+                <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+                <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
+                <Route path="/companies/:companyId" element={<ProtectedRoute><CompanyDetailsPage /></ProtectedRoute>} />
+                <Route path="/countries/:countryCode" element={<ProtectedRoute><CountryMoviesPage /></ProtectedRoute>} />
               </Routes>
+              <Footer />
             </MoviesContextProvider>
           </BrowserRouter>
         </LanguageProvider>
@@ -78,7 +81,10 @@ const App = () => {
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const container = document.getElementById('root'); 
+const root = ReactDOM.createRoot(container); 
+
+root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

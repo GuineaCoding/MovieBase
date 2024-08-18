@@ -8,14 +8,13 @@ import { useLanguage } from '../components/language';
 
 const GenresPage = () => {
     const { language } = useLanguage();
-    // Adjust the useQuery call to pass the language to fetchGenres
     const { data, error, isLoading, isError } = useQuery(['genres', language], () => fetchGenres(language));
-
+    console.log(data)
     if (isLoading) return <Spinner />;
     if (isError) return <Typography variant="h6" color="error">Error: {error.message}</Typography>;
 
     return (
-        <Paper style={{ padding: '20px', margin: '20px' }}>
+        <Paper style={{ padding: '20px', margin: '20px', backgroundColor: 'transparent' }}>
             <Typography variant="h4" gutterBottom>Genres</Typography>
             <Grid container spacing={2}>
                 {data.genres.map((genre) => (

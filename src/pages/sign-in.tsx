@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography } from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
+import { Container, TextField, Button, Typography, Box } from '@mui/material';
 import { AuthContext } from '../components/authenthication/';
 
 export default function Login() {
@@ -14,7 +14,7 @@ export default function Login() {
             if (event === 'SIGNED_IN' && session) {
                 console.log("Auth state changed: SIGNED_IN", session);
                 setSession(session);
-                navigate('/');  // Navigate to home on successful login
+                navigate('/');  
             }
         });
 
@@ -32,9 +32,9 @@ export default function Login() {
     };
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Typography component="h1" variant="h5">Login</Typography>
-            <form onSubmit={handleLogin} style={{ marginTop: 8 }}>
+        <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography component="h1" variant="h5" sx={{ textAlign: 'center' }}>Login</Typography>
+            <form onSubmit={handleLogin} style={{ width: '100%', marginTop: 1 }}>
                 <TextField
                     variant="outlined"
                     margin="normal"
@@ -61,10 +61,20 @@ export default function Login() {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    color="primary"
+                    sx={{ mt: 3, mb: 2, bgcolor: 'darkgreen', color: 'white', '&:hover': { bgcolor: 'green' } }}
                 >
                     Login
                 </Button>
+                <Box textAlign="center">
+                    <Link to="/signup" style={{ textDecoration: 'none' }}>
+                        <Button
+                            variant="contained"
+                            sx={{ bgcolor: 'darkgreen', color: 'white', '&:hover': { bgcolor: 'green' } }}
+                        >
+                            Go to Signup
+                        </Button>
+                    </Link>
+                </Box>
             </form>
         </Container>
     );

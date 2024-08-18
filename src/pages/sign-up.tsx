@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography } from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
+import { Container, TextField, Button, Typography, Box } from '@mui/material';
 import { AuthContext } from '../components/authenthication/';
 
 export default function Signup() {
@@ -21,9 +21,9 @@ export default function Signup() {
     };
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Typography component="h1" variant="h5">Register</Typography>
-            <form onSubmit={handleSignup} style={{ marginTop: 8 }}>
+        <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography component="h1" variant="h5" sx={{ textAlign: 'center' }}>Register</Typography>
+            <form onSubmit={handleSignup} style={{ width: '100%', marginTop: 1 }}>
                 <TextField
                     variant="outlined"
                     margin="normal"
@@ -49,11 +49,21 @@ export default function Signup() {
                 <Button
                     type="submit"
                     fullWidth
-                    variant="outlined"
-                    color="secondary"
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2, bgcolor: 'darkgreen', color: 'white', '&:hover': { bgcolor: 'green' } }}
                 >
                     Register
                 </Button>
+                <Box textAlign="center">
+                    <Link to="/signin" style={{ textDecoration: 'none' }}>
+                        <Button
+                            variant="contained"
+                            sx={{ bgcolor: 'darkgreen', color: 'white', '&:hover': { bgcolor: 'green' } }}
+                        >
+                            Back to Login
+                        </Button>
+                    </Link>
+                </Box>
             </form>
         </Container>
     );

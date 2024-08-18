@@ -2,11 +2,10 @@ import React, { useContext, useState } from 'react';
 import PageTemplate from '../components/templateMovieListPage';
 import { useQuery } from 'react-query';
 import { getUpcomingMovies } from "../api/tmdb-api";
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { MoviesContext } from '../contexts/moviesContext';
 import { Pagination, Box } from '@mui/material';
-import { red, blue } from '@mui/material/colors';
 import { useLanguage } from '../components/language';
+import AddToFavouritesIcon from '../components/cardIcons/addToFavourites';
 
 const UpcomingMoviesPage = () => {
   const { language } = useLanguage();
@@ -14,11 +13,6 @@ const UpcomingMoviesPage = () => {
   const { data, isLoading, isError, error } = useQuery(['upcomingMovies', page, language], () => getUpcomingMovies(page, language), {
     keepPreviousData: true 
   });
-  const { addToMustWatch, mustWatch } = useContext(MoviesContext);
-
-  const handleAddToMustWatch = (movieId) => {
-    addToMustWatch(movieId);
-  };
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -32,16 +26,16 @@ const UpcomingMoviesPage = () => {
       <PageTemplate
         title="Upcoming Movies"
         movies={data.results || []} 
-        action={movie => (
-          <PlaylistAddIcon
-            style={{
-              cursor: 'pointer',
-              color: mustWatch.includes(movie.id) ? red[500] : blue[500],
-              transition: 'color 0.3s',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.color = mustWatch.includes(movie.id) ? red[700] : blue[700]}
-            onMouseLeave={(e) => e.currentTarget.style.color = mustWatch.includes(movie.id) ? red[500] : blue[500]}
-            onClick={() => handleAddToMustWatch(movie.id)}
+        action={(movie) => (
+          <AddToFavouritesIcon
+            movie_id={movie.id}
+            image_url={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            rating={movie.vote_average}
+            title={movie.title}
+            overview={movie.overview}
+            popularity={movie.popularity}
+            release_date={movie.release_date}
+            vote_count={movie.vote_count}
           />
         )}
       />

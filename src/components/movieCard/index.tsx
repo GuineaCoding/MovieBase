@@ -1,90 +1,61 @@
 import React, { useContext } from "react";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import CardHeader from "@mui/material/CardHeader";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import CalendarIcon from "@mui/icons-material/CalendarTodayTwoTone";
-import StarRateIcon from "@mui/icons-material/StarRate";
-import Grid from "@mui/material/Grid";
-import Avatar from "@mui/material/Avatar";
-import img from '../../images/film-poster-placeholder.png';
 import { Link } from "react-router-dom";
+import { Card, CardActions, CardContent, CardMedia, CardHeader, Button, Typography, Grid, Box } from "@mui/material";
+import CalendarTodayTwoToneIcon from "@mui/icons-material/CalendarTodayTwoTone"; 
+import StarRateIcon from "@mui/icons-material/StarRate";
+import FavoriteIcon from '@mui/icons-material/Favorite'; 
+import { red, blue } from "@mui/material/colors";
+import img from '../../images/film-poster-placeholder.png';
 import { MoviesContext } from "../../contexts/moviesContext";
 import { BaseMovieProps } from "../../types/interfaces";
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import { red, blue } from '@mui/material/colors';
 
-const styles = {
-  card: { maxWidth: 345 },
-  media: { height: 500 },
-  avatar: {
-    backgroundColor: "rgb(255, 0, 0)",
-  },
-};
-
-interface MovieCardProps {
-  movie: BaseMovieProps;
-  action?: (m: BaseMovieProps) => React.ReactNode;
-  onUpcomingPage?: boolean;
-}
-
-const MovieCard: React.FC<MovieCardProps> = ({ movie, action, onUpcomingPage }) => {
-  const { favourites, mustWatch } = useContext(MoviesContext);
+const MovieCard = ({ movie, action, onUpcomingPage }) => {
+  const { favourites, addToFavorites } = useContext(MoviesContext);
   const isFavourite = favourites.includes(movie.id);
-  const isInMustWatch = mustWatch.includes(movie.id);
 
-  const iconColor = onUpcomingPage && isInMustWatch ? red[500] : blue[500];
+  const iconColor = onUpcomingPage && isFavourite ? red[500] : blue[500];
 
   return (
-    <Card sx={styles.card}>
-            <CardMedia
-        sx={styles.media}
+    <Card sx={{ backgroundColor: 'darkgreen', color: 'white' }}>
+      <CardMedia
+        component="img"
+        height="500"
         image={movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : img}
-        title={movie.title}
+        alt={movie.title}
       />
       <CardHeader
-        avatar={
-          isFavourite || isInMustWatch ? (
-            <Avatar sx={{ backgroundColor: isFavourite ? "rgb(255, 0, 0)" : "inherit" }}>
-              {action && action({
-                ...movie,
-                iconColor: iconColor  
-              })}
-            </Avatar>
-          ) : null
-        }
-        title={<Typography variant="h5" component="p">{movie.title}</Typography>}
+        title={<Typography variant="h5" color="inherit">{movie.title}</Typography>}
+        sx={{ minHeight: 90, color: 'inherit' }} 
       />
-
       <CardContent>
-        <Grid container>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h6" component="p">
-              <CalendarIcon fontSize="small" />
-              {movie.release_date}
+            <Typography variant="subtitle1" color="inherit" gutterBottom>
+              <CalendarTodayTwoToneIcon sx={{ color: 'inherit' }} /> 
+              Release Date: {movie.release_date}
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6" component="p">
-              <StarRateIcon fontSize="small" />
-              {movie.vote_average}
+            <Typography variant="subtitle1" color="inherit">
+              <StarRateIcon sx={{ color: 'inherit' }} />
+              Rating: {movie.vote_average}
             </Typography>
           </Grid>
         </Grid>
       </CardContent>
-      <CardActions disableSpacing>
-        {action && action({
-          ...movie,
-          iconColor: iconColor  
-        })}
-        <Link to={`/movies/${movie.id}`}>
-          <Button variant="outlined" size="medium" color="primary">
-            More Info ...
-          </Button>
-        </Link>
+      <CardActions disableSpacing sx={{ justifyContent: 'space-between', color: 'inherit' }}>
+        {action && (
+          <Box sx={{ flexGrow: 1 }}>
+            {action({ ...movie, iconColor })}
+          </Box>
+        )}
+        <Box sx={{ flexGrow: 1 }}>
+          <Link to={`/movies/${movie.id}`} style={{ textDecoration: 'none', width: '100%' }}>
+            <Button variant="outlined" size="large" fullWidth sx={{ color: 'white', borderColor: 'white' }}>
+              More Info ...
+            </Button>
+          </Link>
+        </Box>
       </CardActions>
     </Card>
   );
