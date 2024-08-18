@@ -7,22 +7,32 @@ export default function Signup() {
     const { supabase, setSession } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState(''); 
     const navigate = useNavigate();
 
     const handleSignup = async (e) => {
         e.preventDefault();
+        if (password !== confirmPassword) {
+            setError('Passwords do not match.'); 
+            return;
+        }
         const { error, session } = await supabase.auth.signUp({ email, password });
         if (!error && session) {
+            navigate('/');  
             setSession(session);
-            navigate('/'); 
+            
         } else {
             console.error('Signup error:', error?.message);
+            navigate('/');      
+            setError(error.message);
         }
     };
 
     return (
         <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography component="h1" variant="h5" sx={{ textAlign: 'center' }}>Register</Typography>
+            {error && <Typography color="error">{error}</Typography>}  
             <form onSubmit={handleSignup} style={{ width: '100%', marginTop: 1 }}>
                 <TextField
                     variant="outlined"
@@ -45,6 +55,17 @@ export default function Signup() {
                     autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                />
+                <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Confirm Password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <Button
                     type="submit"

@@ -23,4 +23,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-src/supbase.ts
