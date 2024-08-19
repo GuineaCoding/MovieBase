@@ -1,20 +1,26 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { AuthContext } from './index'; 
+import { AuthContext } from './index';
+import { Height } from '@mui/icons-material';
 
 const ProtectedRoute = ({ children }) => {
     const { session, loading } = useContext(AuthContext);
     const location = useLocation();
 
-    if (loading) {
-        return <div>Loading...</div>; 
-    }
+    console.log("Session:", session);
+    console.log("Loading:", loading); 
 
-    if (!session) {
+    if (loading) {
         return <Navigate to="/signin" state={{ from: location }} replace />;
     }
 
-    return children; 
+    if (!session) {
+
+        console.log("Redirecting to sign-in, no session found.");
+        return <Navigate to="/signin" state={{ from: location }} replace />;
+    }
+
+    return children;
 };
 
 export default ProtectedRoute;

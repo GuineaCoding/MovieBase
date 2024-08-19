@@ -50,7 +50,7 @@ const SearchForm = ({ searchParams, setSearchParams, handleSearch }) => {
       />
       <FormControlLabel
         control={<Checkbox checked={searchParams.includeAdult} onChange={handleChange} name="includeAdult" />}
-        label="Include Adult"
+        label="Include All genres"
       />
       <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
         Search

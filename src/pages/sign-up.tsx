@@ -30,7 +30,7 @@ export default function Signup() {
     };
 
     return (
-        <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100vh'}}>
             <Typography component="h1" variant="h5" sx={{ textAlign: 'center' }}>Register</Typography>
             {error && <Typography color="error">{error}</Typography>}  
             <form onSubmit={handleSignup} style={{ width: '100%', marginTop: 1 }}>

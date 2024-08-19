@@ -7,10 +7,28 @@ import { red, blue } from "@mui/material/colors";
 import img from '../../images/film-poster-placeholder.png';
 import { MoviesContext } from "../../contexts/moviesContext";
 
-const MovieCard = ({ movie, action, onUpcomingPage }) => {
-  const { favourites, addToFavorites } = useContext(MoviesContext);
-  const isFavourite = favourites.includes(movie.id);
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string;
+  release_date: string;
+  vote_average: number;
+}
 
+interface MovieCardProps {
+  movie: Movie;
+  action: (props: Movie & { iconColor: string }) => JSX.Element;
+  onUpcomingPage?: boolean;
+}
+
+interface MovieContextInterface {
+  favourites: number[];
+  addToFavorites?: (id: number) => void;
+}
+
+const MovieCard: React.FC<MovieCardProps> = ({ movie, action, onUpcomingPage }) => {
+  const { favourites } = useContext(MoviesContext) as MovieContextInterface;
+  const isFavourite = favourites.includes(movie.id);
   const iconColor = onUpcomingPage && isFavourite ? red[500] : blue[500];
 
   return (

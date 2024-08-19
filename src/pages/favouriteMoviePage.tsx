@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../components/authenthication';
-import { CircularProgress, Typography, Box, Link, Container, Card, CardMedia, CardContent, Grid, MenuItem, FormControl, InputLabel, Select, Pagination, Button } from "@mui/material";
-
+import { CircularProgress, Typography, Box, Container, Card, CardMedia, CardContent, Grid, MenuItem, FormControl, InputLabel, Select, Pagination, Button } from "@mui/material";
+import { Link } from "react-router-dom";
 const FavoritesPage = () => {
     const { supabase } = useContext(AuthContext);
     const [favorites, setFavorites] = useState([]);
@@ -110,9 +110,16 @@ const FavoritesPage = () => {
                                     Overview: {movie.overview}
                                 </Typography>
                             </CardContent>
-                            <Button component={Link} href={`/movies/${movie.movie_id}`} sx={{ mt: 'auto', bgcolor: 'white', color: 'darkgreen', '&:hover': { bgcolor: 'lightgray' } }}>
+
+
+
+                            <Box sx={{ flexGrow: 1 }}>
+          <Link to={`/movies/${movie.movie_id}`} style={{ textDecoration: 'none', width: '100%' }}>
+          <Button sx={{ mt: 'auto', bgcolor: 'white', color: 'darkgreen', '&:hover': { bgcolor: 'lightgray' } ,width: '100%'}}>
                                 More Info
                             </Button>
+          </Link>
+        </Box>
                         </Card>
                     </Grid>
                 ))}

@@ -72,7 +72,8 @@ const SiteHeader = () => {
   const menuOptions = [
     { label: "Home", path: "/" },
     { label: "Upcoming", path: "/movies/upcoming" },
-    { label: "Favorites", path: "/movies/favourites" },
+    { label: "Search", path: "/search" },
+    { label: "Add Movie", path: "/create-movie" },
   ];
 
   const selectionsMenuOptions = [
@@ -94,7 +95,7 @@ const SiteHeader = () => {
 
   return (
     <>
-      <AppBar position="fixed" elevation={0} color="primary">
+      <AppBar sx={{ bgcolor: 'darkgreen', color: 'white'}} position="fixed" elevation={0} color="primary">
         <Toolbar>
           <Typography variant="h4" sx={styles.title}>
             MOVIEBASE

@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AuthContext } from '../authenthication';
+import { Typography } from "@mui/material";
 
 interface Props {
   movie_id: number;
@@ -30,6 +31,7 @@ const AddToFavouritesIcon = ({
     const { supabase } = useContext(AuthContext) as { supabase: any };
     const [user, setUser] = useState<{ id: number } | null>(null);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
         const checkSession = async () => {
@@ -38,19 +40,19 @@ const AddToFavouritesIcon = ({
                 console.error('Session error:', error.message);
                 return; 
             }
-            if (!session) {
+            if (!session || !session.user) {
                 console.log('No active session found.');
+                // setErrorMsg('No user session found. Please log in.');
                 return; 
             }
             setUser(session.user);
-            if (session.user) {
-                checkFavorite(session.user.id);
-            }
+            checkFavorite(session.user.id);
         };
 
         const checkFavorite = async (userId: number) => {
             if (!userId) {
                 console.error('No user ID provided for checking favorites');
+                setErrorMsg('User ID is missing.');
                 return;
             }
             const { data, error } = await supabase
@@ -60,6 +62,7 @@ const AddToFavouritesIcon = ({
                 .eq("movie_id", movie_id);
             if (error) {
                 console.error('Error checking favorites:', error);
+                setErrorMsg('Error checking favorites.');
                 return;
             }
             setIsFavorite(data.length > 0);
@@ -67,7 +70,7 @@ const AddToFavouritesIcon = ({
 
         checkSession();
 
-        const { data: listener } = supabase.auth.onAuthStateChange((event: any, session: any) => {
+        const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
             if (session && session.user) {
                 setUser(session.user);
                 checkFavorite(session.user.id);
@@ -82,7 +85,7 @@ const AddToFavouritesIcon = ({
     const addToFavorites = async () => {
         if (!user || !movie_id) {
             console.error("No user session or movie ID found.");
-            alert("Please log in and select a movie to add to favorites.");
+            setErrorMsg("Please log in.");
             return;
         }
 
@@ -100,15 +103,16 @@ const AddToFavouritesIcon = ({
         }]);
         if (error) {
             console.error('Error adding to favorites:', error);
+            setErrorMsg('Error adding to favorites.');
             return;
         }
-        console.log('Added to favorites successfully:', data);
         setIsFavorite(true);
     };
 
     const removeFromFavorites = async () => {
         if (!user || !movie_id) {
             console.error("No user session or movie ID found for removal.");
+            setErrorMsg("Please log in to remove a movie from favorites.");
             return;
         }
         const { data, error } = await supabase
@@ -118,16 +122,19 @@ const AddToFavouritesIcon = ({
             .eq("movie_id", movie_id);
         if (error) {
             console.error('Error removing from favorites:', error);
+            setErrorMsg('Error removing from favorites.');
             return;
         }
-        console.log('Removed from favorites successfully:', data);
         setIsFavorite(false);
     };
 
     return (
-        <IconButton onClick={isFavorite ? removeFromFavorites : addToFavorites}>
-            {isFavorite ? <DeleteIcon color="error" /> : <FavoriteIcon color="error" />}
-        </IconButton>
+        <>
+          <IconButton onClick={isFavorite ? removeFromFavorites : addToFavorites}>
+              {isFavorite ? <DeleteIcon color="error" /> : <FavoriteIcon color="error" />}
+          </IconButton>
+          {errorMsg && <Typography color="error">{errorMsg}</Typography>}
+        </>
     );
 };
 

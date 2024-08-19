@@ -32,7 +32,7 @@ export default function Login() {
     };
 
     return (
-        <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' , height: '100vh'}}>
             <Typography component="h1" variant="h5" sx={{ textAlign: 'center' }}>Login</Typography>
             <form onSubmit={handleLogin} style={{ width: '100%', marginTop: 1 }}>
                 <TextField
